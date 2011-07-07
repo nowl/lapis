@@ -15,7 +15,8 @@ SRCS = \
 	sdl_sound.c \
 	game_object.c \
 	message.c \
-	mainloop.c
+	mainloop.c \
+	image_loader.c
 
 OBJS = $(SRCS:.c=.o)
 

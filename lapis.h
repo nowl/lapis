@@ -12,16 +12,16 @@
 #ifdef NDEBUG
 # define LOG
 #else
-# define LOG(...) { fprintf(stdout, "%s:%d -> ", __FILE__, __LINE__); fprintf(stdout, __VA_ARGS__); }
+# define LOG(...) { fprintf(stdout, "[L] %s:%d -> ", __FILE__, __LINE__); fprintf(stdout, __VA_ARGS__); }
 #endif
 
-#define WARN(...) fprintf(stdout, __VA_ARGS__);
-#define ERROR(...) fprintf(stdout, __VA_ARGS__);
+#define WARN(...) { fprintf(stdout, "[W] %s:%d -> ", __FILE__, __LINE__); fprintf(stdout, __VA_ARGS__); }
+#define ERROR(...) { fprintf(stdout, "[E] %s:%d -> ", __FILE__, __LINE__); fprintf(stdout, __VA_ARGS__); }
 
 #ifndef FALSE
 # define FALSE 0
 # define TRUE (!FALSE)
-#endif 
+#endif
 
 typedef struct engine engine_t;
 typedef struct sdl_graphics_context sdl_graphics_context_t;
@@ -274,5 +274,18 @@ message_t   message_construct(game_object_t         *sender,
 void mainloop(engine_t* eng);
 void set_ticks_per_second(unsigned int num);
 void set_max_frame_skip(unsigned int num);
+
+/* image_loader */
+
+int
+image_loader_load(char *alias,
+                  char *filename,
+                  int x,
+                  int y,
+                  int width,
+                  int height);
+
+SDL_Surface *image_loader_get(char *alias);
+void         image_loader_cleanup();
 
 #endif  /* __LAPIS_H__ */
