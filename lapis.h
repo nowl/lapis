@@ -172,7 +172,6 @@ void *memory_grow_to_size(void *mem_p,
 
 /* event_queue */
 
-
 void       event_queue_init();
 void       event_queue_destroy();
 void       event_queue_push(SDL_Event *event);
@@ -270,5 +269,10 @@ message_t   message_construct(game_object_t         *sender,
                               game_object_t         *receiver,
                               message_callback_func  callback_func);
 
+/* mainloop */
+
+void mainloop(engine_t* eng);
+void set_ticks_per_second(unsigned int num);
+void set_max_frame_skip(unsigned int num);
 
 #endif  /* __LAPIS_H__ */
