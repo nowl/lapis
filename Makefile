@@ -16,7 +16,8 @@ SRCS = \
 	game_object.c \
 	message.c \
 	mainloop.c \
-	image_loader.c
+	image_loader.c \
+	image_render_set.c
 
 OBJS = $(SRCS:.c=.o)
 

@@ -288,4 +288,11 @@ image_loader_load(char *alias,
 SDL_Surface *image_loader_get(char *alias);
 void         image_loader_cleanup();
 
+/* image_render_set */
+
+void          image_render_set_create(char *name);
+void          image_render_set_add(char *name, char *image_name, int num_ticks);
+void          image_render_set_cleanup();
+SDL_Surface * mage_render_set_get_image(char *name, int cur_tick);
+
 #endif  /* __LAPIS_H__ */
