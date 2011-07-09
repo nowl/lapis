@@ -295,4 +295,34 @@ void          image_render_set_add(char *name, char *image_name, int num_ticks);
 void          image_render_set_cleanup();
 SDL_Surface * mage_render_set_get_image(char *name, int cur_tick);
 
+/* collide */
+
+int collide_point_in_rect(float x, float y, SDL_Rect *rect);
+int collide_lines_intersect(float x1, float y1, float x2,
+                            float y2, float x3, float y3,
+                            float x4, float y4);
+int collide_point_in_polygon(float x, float y,
+                             float *polygon, int num_points);
+int collide_rect_intersect(SDL_Rect *bb1, SDL_Rect *bb2);
+int collide_polygon_intersect(float *poly1, int poly1_num_points,
+                              float *poly2, int poly2_num_points);
+
+/* astar */
+
+struct astar_pos_t {
+	unsigned int x, y;
+};
+
+typedef struct astar_pos_t* astar_pos_vector_t;
+
+void astar_init(int width, int height);
+void astar_destroy();
+
+/* It is the user's responsibility to free the pointer returned by
+ * this function when finished with it. */
+void astar_best_path(struct astar_pos_t begin,
+					 struct astar_pos_t end);
+astar_pos_vector_t astar_retrieve_path();
+int astar_retrieve_path_length();
+
 #endif  /* __LAPIS_H__ */

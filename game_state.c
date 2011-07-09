@@ -31,6 +31,8 @@ game_state_remove_object(game_state_t *gs, game_object_t *obj)
      * NULL and then check if there are enough empty objects to
      * warrant a rebuild of the object list. Perhaps number of nulls >
      * 1/2 the objects_len. */    
+
+    return NULL;
 }
 
 void

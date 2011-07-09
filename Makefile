@@ -17,7 +17,9 @@ SRCS = \
 	message.c \
 	mainloop.c \
 	image_loader.c \
-	image_render_set.c
+	image_render_set.c \
+	collide.c \
+	astar.c
 
 OBJS = $(SRCS:.c=.o)
 
