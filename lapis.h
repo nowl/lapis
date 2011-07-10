@@ -315,7 +315,11 @@ struct astar_pos_t {
 
 typedef struct astar_pos_t* astar_pos_vector_t;
 
-void astar_init(int width, int height);
+typedef int (*move_cost_fn)(unsigned int x, unsigned int y);
+
+void astar_init(int width,
+                int height,
+                move_cost_fn fn);
 void astar_destroy();
 
 /* It is the user's responsibility to free the pointer returned by

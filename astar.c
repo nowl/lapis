@@ -18,6 +18,8 @@ static unsigned int OPEN_NEXT_MIN;
 static astar_pos_vector_t FINAL_PATH;
 static int FINAL_PATH_LENGTH;
 
+static move_cost_fn MoveCost;
+
 static void
 reset_vectors()
 {
@@ -33,7 +35,7 @@ reset_vectors()
 }
 
 void
-astar_init(int width, int height)
+astar_init(int width, int height, move_cost_fn fn)
 {
 	/* The sizes of the open and closed list will never be larger than
 	 * the number of squares on the map. */
@@ -42,6 +44,7 @@ astar_init(int width, int height)
 	OPEN = malloc(sizeof(*OPEN) * LIST_SIZE);
 	CLOSED = malloc(sizeof(*CLOSED) * LIST_SIZE);
 	FINAL_PATH = malloc(sizeof(*FINAL_PATH) * LIST_SIZE);
+    MoveCost = fn;
 
 	reset_vectors();
 }
@@ -188,7 +191,7 @@ astar_best_path(struct astar_pos_t begin,
 				break;
 			}
 
-			int cost = map_move_cost_at(new_node.x, new_node.y);
+			int cost = MoveCost(new_node.x, new_node.y);
 			if(cost != -1 && find_in_closed(new_node.x, new_node.y) == -1)
 			{
 				int h = get_heuristic_cost(new_node.x, new_node.y, end_pos.x, end_pos.y);
