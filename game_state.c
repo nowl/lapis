@@ -8,8 +8,19 @@ game_state_create(int id)
     gs->objects_len = 0;
     gs->objects_cap = 0;
     gs->objects = NULL;
+    gs->bcast_recvrs_len = 0;
+    gs->bcast_recvrs_cap = 0;
+    gs->bcast_recvrs = NULL;
                                       
     return gs;
+}
+
+void
+game_state_destroy(game_state_t *state)
+{
+    if(state->bcast_recvrs) free(state->bcast_recvrs);
+    if(state->objects) free(state->objects);
+    free(state);
 }
 
 void
@@ -133,5 +144,47 @@ game_state_update(engine_t *eng, unsigned int ticks)
             entry = game_object_list_SLL_NEXT(&gs->objects, entry);
             */
         }
+    }
+}
+
+void
+game_state_append_bcast_recvr(game_state_t *state, game_object_t *obj, unsigned long hash)
+{
+    state->bcast_recvrs = memory_grow_to_size(state->bcast_recvrs,
+                                              sizeof(*state->bcast_recvrs),
+                                              &state->bcast_recvrs_cap,
+                                              state->bcast_recvrs_len + 1);
+    state->bcast_recvrs[state->bcast_recvrs_len].obj = obj;
+    state->bcast_recvrs[state->bcast_recvrs_len].hash = hash;
+    state->bcast_recvrs_len++;
+}
+
+void
+game_state_deliver_message_sync(game_state_t *state, message_t message)
+{
+    /* TODO */
+}
+
+void
+game_state_deliver_message_async(game_state_t *state, message_t message)
+{
+    /* TODO: testing */
+    if(message.type == message_type_hash("sdl-event"))
+    {
+        SDL_Event event = *(SDL_Event *)message.data;
+        LOG("sdl-event broadcast (type: %d)\n", event.type);
+        if(event.type == SDL_KEYDOWN)
+        {
+            if(event.key.keysym.sym == SDLK_ESCAPE)
+                engine_quit(lapis_get_engine());
+        }
+    }
+
+    /* TODO: finish this */
+    if(message.receiver == NULL)
+    {
+        /* this is a broadcast message, look for listeners for given
+         * type */
+        
     }
 }

@@ -55,7 +55,7 @@ remove_obj_by_id(int id)
 }
 
 void
-game_object_destory(engine_t *eng, game_object_t *go)
+game_object_destroy(engine_t *eng, game_object_t *go)
 {
     // TODO: ensure object is removed from all states
     game_state_remove_object(eng->state, go);
@@ -283,9 +283,10 @@ game_object_clear_render_callbacks(game_object_t *obj)
 void
 game_object_append_message(game_object_t *obj,
                            game_object_t *sender,
-                           message_callback_func callback)
+                           char *type,
+                           void *data)
 {
-    message_t mes = message_construct(sender, obj, callback);
+    message_t mes = message_construct(sender, obj, type, data);
     obj->messages =
         memory_grow_to_size(obj->messages,
                             sizeof(*obj->messages),

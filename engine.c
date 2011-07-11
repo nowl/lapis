@@ -34,7 +34,10 @@ engine_handle_events(engine_t *eng)
     // message processing loop
     SDL_Event event;
     while (SDL_PollEvent(&event))
-        event_queue_push(&event);
+    {
+        message_t message = message_construct(NULL, NULL, "sdl-event", &event);
+        message_deliver(message, ASYNC);
+    }
 }
 
 void

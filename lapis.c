@@ -1,5 +1,7 @@
 #include "lapis.h"
 
+static engine_t *engine = NULL;
+
 int
 lapis_init()
 {
@@ -35,15 +37,35 @@ lapis_init()
 
     LOG("SDL initialization successful\n");
 
+    /* initialize engine */
+    
+    engine = engine_create();
+   
     return 0;
 
 FAIL:
     return 1;
 }
 
+engine_t *lapis_get_engine()
+{
+    return engine;
+}
+
+void
+lapis_mainloop()
+{
+    mainloop(engine);
+}
+
 void
 lapis_deinit()
 {
+    image_render_set_cleanup();
+
+    if(engine)
+        engine_destroy(engine);
+
     Mix_CloseAudio();
 
     Mix_Quit();

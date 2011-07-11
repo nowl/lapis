@@ -4,11 +4,26 @@ int main(int argc, char *argv[])
 {
     lapis_init();
 
-    engine_t *eng = engine_create();
+    engine_t *engine = lapis_get_engine();
 
-    engine_quit(eng);
+    game_state_t *state = game_state_create(0);
 
-    image_loader_load("test", "handle-8.png", 
+    engine_switch_state(engine, state);
+
+    /* initialize video */
+    
+    lsdl_set_video_mode(engine->sdl_driver,
+                        1024, 768, 0);
+
+    /* create object */
+
+    game_object_t * obj = game_object_create(0, NULL);
+    game_state_append_object(state, obj);
+    game_state_append_bcast_recvr(state, obj, message_type_hash("sdl-event"));
+        
+    //engine_quit(engine);
+
+    image_loader_load("test", "screenshot1.jpg", 
                       0, 0, 16, 16);
 
     SDL_Surface* s = image_loader_get("test");
@@ -17,12 +32,10 @@ int main(int argc, char *argv[])
     image_render_set_add("test_set", "test", 10);
     image_render_set_get_image("test_set", 10);
 
-    mainloop(eng);
+    lapis_mainloop();
 
-    image_render_set_cleanup();
-
-    engine_destroy(eng);
-    
+    game_state_destroy(state);
+        
     lapis_deinit();
 
     return 0;

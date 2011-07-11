@@ -7,7 +7,6 @@ LIBS =
 SRCS = \
 	engine.c \
 	utils.c \
-	event_queue.c \
 	lapis.c \
 	game_state.c \
 	sdl_graphics_context.c \

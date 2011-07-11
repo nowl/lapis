@@ -25,20 +25,28 @@
 
 typedef struct engine engine_t;
 typedef struct sdl_graphics_context sdl_graphics_context_t;
+typedef struct bcast_recvr bcast_recvr_t;
 typedef struct game_state game_state_t;
 typedef struct game_object game_object_t;
 typedef struct update_callback update_callback_t;
 typedef struct render_callback render_callback_t;
 typedef struct message message_t;
 
-typedef void (*message_callback_func)(game_object_t *sender, game_object_t *receiver);
+//typedef void (*message_callback_func)(game_object_t *sender, game_object_t *receiver, void *data);
 typedef void (*game_object_update_fn)(engine_t *engine, game_object_t *obj, unsigned int ticks);
 typedef void (*game_object_render_fn)(engine_t *engine, game_object_t *obj, float interpolation);
 
 struct message
 {
     game_object_t *sender, *receiver;
-    message_callback_func callback_func;
+    unsigned long type;
+    void *data;
+};
+
+struct bcast_recvr
+{
+    game_object_t *obj;         /* the object listening to this broadcast message */
+    unsigned long hash;         /* the hashed broadcast message type */
 };
 
 struct game_state
@@ -52,6 +60,10 @@ struct game_state
     //game_state_update_fn update_fn;
     //game_state_event_handle_fn event_handle_fn;
     //game_state_render_fn render_fn;
+    
+    bcast_recvr_t *bcast_recvrs;
+    size_t bcast_recvrs_len;
+    size_t bcast_recvrs_cap;
 };
 
 enum callback_types
@@ -148,8 +160,10 @@ void lsdl_flip(engine_t * manager);
 
 /* lapis */
 
-int  lapis_init();
-void lapis_deinit();
+int       lapis_init();
+void      lapis_deinit();
+engine_t *lapis_get_engine();
+void      lapis_mainloop();
 
 /* engine */
 
@@ -170,21 +184,17 @@ void *memory_grow_to_size(void *mem_p,
                           size_t *mem_cap_ip,
                           size_t mem_size_i);
 
-/* event_queue */
-
-void       event_queue_init();
-void       event_queue_destroy();
-void       event_queue_push(SDL_Event *event);
-SDL_Event *event_queue_peek();
-void       event_queue_pop();
-
 /* game_state */
 
 game_state_t * game_state_create(int id);
+void           game_state_destroy(game_state_t *state);
 void           game_state_update(engine_t *, unsigned int ticks);
 void           game_state_render(engine_t *, float interpolation);
 void           game_state_append_object(game_state_t *, game_object_t *);
 game_object_t* game_state_remove_object(game_state_t *, game_object_t *);
+void           game_state_append_bcast_recvr(game_state_t *state, game_object_t *obj, unsigned long hash);
+void           game_state_deliver_message_sync(game_state_t *state, message_t message);
+void           game_state_deliver_message_async(game_state_t *state, message_t message);
 
 /* sdl_font */
 
@@ -202,7 +212,7 @@ void sound_loader_cleanup();
 /* game_object */
 
 game_object_t * game_object_create(unsigned int type, void *data);
-void            game_object_destory(engine_t *eng, game_object_t *go);
+void            game_object_destroy(engine_t *eng, game_object_t *go);
 game_object_t * game_object_get(int id);
 game_object_t * game_object_remove(game_object_t *obj);
 game_object_t * game_object_remove_by_id(int id);
@@ -250,7 +260,8 @@ game_object_render_callback_next(game_object_t *obj,
 void
 game_object_append_message(game_object_t *obj,
                            game_object_t *sender,
-                           message_callback_func callback);
+                           char *type,
+                           void *data);
 
 void
 game_object_clear_messages(game_object_t *obj);
@@ -261,13 +272,29 @@ game_object_message_next(game_object_t *obj,
 
 /* message */
 
+/*
 message_t * message_create(game_object_t            *sender,
                            game_object_t            *receiver,
-                           message_callback_func     callback_func);
+                           message_callback_func     callback_func,
+                           char                     *type,
+                           void                     *data);
 void        message_destroy(message_t               *message);
+*/
 message_t   message_construct(game_object_t         *sender,
                               game_object_t         *receiver,
-                              message_callback_func  callback_func);
+                              char                  *type,
+                              void                  *data);
+
+unsigned long message_type_hash(char *type);
+
+/* message deliver type */
+enum
+{
+    SYNC,
+    ASYNC
+};
+
+void message_deliver(message_t mes, int type);
 
 /* mainloop */
 
@@ -293,7 +320,7 @@ void         image_loader_cleanup();
 void          image_render_set_create(char *name);
 void          image_render_set_add(char *name, char *image_name, int num_ticks);
 void          image_render_set_cleanup();
-SDL_Surface * mage_render_set_get_image(char *name, int cur_tick);
+SDL_Surface * image_render_set_get_image(char *name, int cur_tick);
 
 /* collide */
 

@@ -20,8 +20,6 @@ set_max_frame_skip(unsigned int num)
 void
 mainloop(engine_t* eng)
 {
-    event_queue_init();
-
     engine_start(eng);
 
     unsigned long next_game_tick = lsdl_get_tick();
@@ -57,6 +55,4 @@ mainloop(engine_t* eng)
 			fps_start_time = lsdl_get_tick();
 		}
     }
-
-    event_queue_destroy();
 }
