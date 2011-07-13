@@ -35,6 +35,7 @@ typedef struct message message_t;
 //typedef void (*message_callback_func)(game_object_t *sender, game_object_t *receiver, void *data);
 typedef void (*game_object_update_fn)(engine_t *engine, game_object_t *obj, unsigned int ticks);
 typedef void (*game_object_render_fn)(engine_t *engine, game_object_t *obj, float interpolation);
+typedef int  (*recv_callback_fn)(message_t mes);
 
 struct message
 {
@@ -99,13 +100,10 @@ struct game_object
 	int screenx;
 	int screeny;
 
-    /* TODO: possibly make these stack allocated like messages? */
-    update_callback_t **update_callbacks;
-    size_t update_callbacks_len;
-    size_t update_callbacks_cap;
-    render_callback_t **render_callbacks;
-    size_t render_callbacks_len;
-    size_t render_callbacks_cap;
+    update_callback_t   *update_callback;
+    render_callback_t   *render_callback;
+    recv_callback_fn     recv_callback; /* message receive callback */
+    
     message_t *messages;
     size_t messages_len;
     size_t messages_cap;
@@ -211,64 +209,25 @@ void sound_loader_cleanup();
 
 /* game_object */
 
-game_object_t * game_object_create(unsigned int type, void *data);
-void            game_object_destroy(engine_t *eng, game_object_t *go);
-game_object_t * game_object_get(int id);
-game_object_t * game_object_remove(game_object_t *obj);
-game_object_t * game_object_remove_by_id(int id);
-
-void game_object_append_update_callback_c_func(game_object_t *obj,
-                                               const game_object_update_fn callback);
-update_callback_t * game_object_remove_update_callback_c_func(game_object_t *obj,
-                                                              const game_object_update_fn callback);
-void game_object_append_update_callback_script_func(game_object_t *obj,
-                                                    char *callback);
-
-update_callback_t *
-game_object_remove_update_callback_script_func(game_object_t *obj,
-                                               char *callback);
-void
-game_object_clear_update_callbacks(game_object_t *obj);
-
-update_callback_t *
-game_object_update_callback_next(game_object_t *obj,
-                                 update_callback_t *cur);
-
-void
-game_object_append_render_callback_c_func(game_object_t *obj,
-                                          const game_object_render_fn callback);
-
-render_callback_t *
-game_object_remove_render_callback_c_func(game_object_t *obj,
-                                   const game_object_render_fn callback);
-
-void
-game_object_append_render_callback_script_func(game_object_t *obj,
-                                   char * callback);
-
-render_callback_t *
-game_object_remove_render_callback_script_func(game_object_t *obj,
-                                   char * callback);
-
-void
-game_object_clear_render_callbacks(game_object_t *obj);
-
-render_callback_t *
-game_object_render_callback_next(game_object_t *obj,
-                                 render_callback_t *cur);
-
-void
-game_object_append_message(game_object_t *obj,
-                           game_object_t *sender,
-                           char *type,
-                           void *data);
-
-void
-game_object_clear_messages(game_object_t *obj);
-
-message_t *
-game_object_message_next(game_object_t *obj,
-                         message_t *cur);
+game_object_t     *game_object_create(unsigned int type, void *data);
+void               game_object_destroy(engine_t *eng, game_object_t *go);
+game_object_t     *game_object_get(int id);
+game_object_t     *game_object_remove(game_object_t *obj);
+game_object_t     *game_object_remove_by_id(int id);
+void               game_object_set_recv_callback_c_func(game_object_t *obj,
+                                                        recv_callback_fn callback);
+void               game_object_set_update_callback_c_func(game_object_t *obj,
+                                                          const game_object_update_fn callback);
+void               game_object_set_update_callback_script_func(game_object_t *obj,
+                                                               char *callback);
+void               game_object_set_render_callback_c_func(game_object_t *obj,
+                                                          const game_object_render_fn callback);
+void               game_object_set_render_callback_script_func(game_object_t *obj,
+                                                               char * callback);
+void               game_object_append_message(game_object_t *obj,
+                                              message_t mes);
+void               game_object_clear_messages(game_object_t *obj);
+int                game_object_recv_mes(game_object_t *obj, message_t mes);
 
 /* message */
 

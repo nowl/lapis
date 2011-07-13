@@ -1,5 +1,24 @@
 #include "lapis.h"
 
+int message_handler(message_t mes)
+{
+    if(mes.type == message_type_hash("sdl-event"))
+    {
+        SDL_Event event = *(SDL_Event *)mes.data;
+        LOG("sdl-event broadcast (type: %d)\n", event.type);
+        if(event.type == SDL_KEYDOWN)
+        {
+            if(event.key.keysym.sym == SDLK_ESCAPE)
+            {
+                engine_quit(lapis_get_engine());
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}                    
+
 int main(int argc, char *argv[])
 {
     lapis_init();
@@ -18,6 +37,7 @@ int main(int argc, char *argv[])
     /* create object */
 
     game_object_t * obj = game_object_create(0, NULL);
+    game_object_set_recv_callback_c_func(obj, message_handler);
     game_state_append_object(state, obj);
     game_state_append_bcast_recvr(state, obj, message_type_hash("sdl-event"));
         
@@ -34,9 +54,9 @@ int main(int argc, char *argv[])
 
     lapis_mainloop();
 
-    game_state_destroy(state);
-        
-    lapis_deinit();
+    /* this will be cleaned up by the OS */
+    //game_state_destroy(state);
+    //lapis_deinit();
 
     return 0;
 }

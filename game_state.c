@@ -168,23 +168,25 @@ game_state_deliver_message_sync(game_state_t *state, message_t message)
 void
 game_state_deliver_message_async(game_state_t *state, message_t message)
 {
-    /* TODO: testing */
-    if(message.type == message_type_hash("sdl-event"))
-    {
-        SDL_Event event = *(SDL_Event *)message.data;
-        LOG("sdl-event broadcast (type: %d)\n", event.type);
-        if(event.type == SDL_KEYDOWN)
-        {
-            if(event.key.keysym.sym == SDLK_ESCAPE)
-                engine_quit(lapis_get_engine());
-        }
-    }
-
-    /* TODO: finish this */
     if(message.receiver == NULL)
     {
         /* this is a broadcast message, look for listeners for given
          * type */
-        
+        unsigned long type = message.type;
+
+        int i;
+        for(i=0; i<state->bcast_recvrs_len; i++)
+        {
+            bcast_recvr_t *bcast_recv = &state->bcast_recvrs[i];
+            if(bcast_recv->hash == type)
+            {
+                /* this object is listening for these */
+                int result = game_object_recv_mes(bcast_recv->obj,
+                                                  message);
+                printf("result = %d\n", result);
+                if(result != 0)
+                    break;
+            }
+        }        
     }
 }

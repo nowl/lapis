@@ -16,12 +16,9 @@ game_object_create(unsigned int type, void *data)
 	obj->image = NULL;
 	obj->screenx = 0;
 	obj->screeny = 0;
-    obj->update_callbacks = NULL;
-    obj->update_callbacks_len = 0;
-    obj->update_callbacks_cap = 0;
-    obj->render_callbacks = NULL;
-    obj->render_callbacks_len = 0;
-    obj->render_callbacks_cap = 0;
+    obj->update_callback = NULL;
+    obj->render_callback = NULL;
+    obj->recv_callback = NULL;
     obj->messages = NULL;
     obj->messages_len = 0;
     obj->messages_cap = 0;
@@ -60,8 +57,10 @@ game_object_destroy(engine_t *eng, game_object_t *go)
     // TODO: ensure object is removed from all states
     game_state_remove_object(eng->state, go);
 
-    game_object_clear_update_callbacks(go);
-    game_object_clear_render_callbacks(go);
+    if(go->update_callback)
+        free(go->update_callback);
+    if(go->render_callback)
+        free(go->render_callback);
     
     remove_obj_by_id(go->id);
     free(go);
@@ -90,203 +89,57 @@ game_object_remove_by_id(int id)
     return remove_obj_by_id(id);
 }
 
-static void
-stash_update_cb(game_object_t *obj,
-                update_callback_t *cb)
+void
+game_object_set_recv_callback_c_func(game_object_t *obj,
+                                     recv_callback_fn callback)
 {
-    obj->update_callbacks =
-        memory_grow_to_size(obj->update_callbacks,
-                            sizeof(*obj->update_callbacks),
-                            &obj->update_callbacks_cap,
-                            obj->update_callbacks_len + 1);
-    obj->update_callbacks[obj->update_callbacks_len] = cb;
-    obj->update_callbacks_len++;
+    obj->recv_callback = callback;
 }
 
 void
-game_object_append_update_callback_c_func(game_object_t *obj,
-                                          const game_object_update_fn callback)
+game_object_set_update_callback_c_func(game_object_t *obj,
+                                       const game_object_update_fn callback)
 {
     update_callback_t *cb = malloc(sizeof(*cb));
     cb->type = C_FUNC;
     cb->cb.c_func = callback;
-    stash_update_cb(obj, cb);
-}
-
-update_callback_t *
-game_object_remove_update_callback_c_func(game_object_t *obj,
-                                          const game_object_update_fn callback)
-{
-    int i;
-    for(i=0; i<obj->update_callbacks_len; i++)
-        if(obj->update_callbacks[i] &&
-           obj->update_callbacks[i]->cb.c_func == callback)
-        {
-            update_callback_t *cb = obj->update_callbacks[i];
-            obj->update_callbacks[i] = NULL;
-            /* TODO: attempt rebuild of cache? */
-            return cb;
-        }
-
-    return NULL;
+    obj->update_callback = cb;
 }
 
 void
-game_object_append_update_callback_script_func(game_object_t *obj,
-                                               char *callback)
+game_object_set_update_callback_script_func(game_object_t *obj,
+                                            char *callback)
 {
     update_callback_t *cb = malloc(sizeof(*cb));
     cb->type = SCRIPT_FUNC;
     cb->cb.script_func = strdup(callback);
-    stash_update_cb(obj, cb);
-}
-
-update_callback_t *
-game_object_remove_update_callback_script_func(game_object_t *obj,
-                                               char *callback)
-{
-    int i;
-    for(i=0; i<obj->update_callbacks_len; i++)
-        if( obj->update_callbacks[i] && 
-            strcmp(obj->update_callbacks[i]->cb.script_func, callback) == 0 )
-        {
-            update_callback_t *cb = obj->update_callbacks[i];
-            obj->update_callbacks[i] = NULL;
-            /* TODO: attempt rebuild of cache? */
-            return cb;
-        }
-
-    return NULL;
-}
-
-static void
-free_updates(update_callback_t *cb)
-{
-    switch(cb->type)
-    {
-    case C_FUNC:
-        break;
-    case SCRIPT_FUNC:
-        free(cb->cb.script_func);
-        break;
-    default:
-        assert(FALSE);
-    }
-
-    free(cb);
+    obj->update_callback = cb;
 }
 
 void
-game_object_clear_update_callbacks(game_object_t *obj)
-{
-    int i;
-    for(i=0; i<obj->update_callbacks_len; i++)
-        if(obj->update_callbacks[i])
-            free_updates(obj->update_callbacks[i]);
-}
-
-static void
-stash_render_cb(game_object_t *obj,
-                render_callback_t *cb)
-{
-    obj->render_callbacks =
-        memory_grow_to_size(obj->render_callbacks,
-                            sizeof(*obj->render_callbacks),
-                            &obj->render_callbacks_cap,
-                            obj->render_callbacks_len + 1);
-    obj->render_callbacks[obj->render_callbacks_len] = cb;
-    obj->render_callbacks_len++;
-}
-
-void
-game_object_append_render_callback_c_func(game_object_t *obj,
-                                          const game_object_render_fn callback)
+game_object_set_render_callback_c_func(game_object_t *obj,
+                                       const game_object_render_fn callback)
 {
     render_callback_t *cb = malloc(sizeof(*cb));
     cb->type = C_FUNC;
     cb->cb.c_func = callback;
-    stash_render_cb(obj, cb);
-}
-
-render_callback_t *
-game_object_remove_render_callback_c_func(game_object_t *obj,
-                                          const game_object_render_fn callback)
-{
-    int i;
-    for(i=0; i<obj->render_callbacks_len; i++)
-        if(obj->render_callbacks[i] &&
-           obj->render_callbacks[i]->cb.c_func == callback)
-        {
-            render_callback_t *cb = obj->render_callbacks[i];
-            obj->render_callbacks[i] = NULL;
-            /* TODO: attempt rebuild of cache? */
-            return cb;
-        }
-
-    return NULL;
+    obj->render_callback = cb;
 }
 
 void
-game_object_append_render_callback_script_func(game_object_t *obj,
-                                               char * callback)
+game_object_set_render_callback_script_func(game_object_t *obj,
+                                            char * callback)
 {
     render_callback_t *cb = malloc(sizeof(*cb));
     cb->type = SCRIPT_FUNC;
     cb->cb.script_func = strdup(callback);
-    stash_render_cb(obj, cb);
-}
-
-render_callback_t *
-game_object_remove_render_callback_script_func(game_object_t *obj,
-                                               char * callback)
-{
-    int i;
-    for(i=0; i<obj->render_callbacks_len; i++)
-        if( obj->render_callbacks[i] && 
-            strcmp(obj->render_callbacks[i]->cb.script_func, callback) == 0 )
-        {
-            render_callback_t *cb = obj->render_callbacks[i];
-            obj->render_callbacks[i] = NULL;
-            /* TODO: attempt rebuild of cache? */
-            return cb;
-        }
-
-    return NULL;
-}
-
-static void
-free_renders(render_callback_t *cb)
-{
-    switch(cb->type)
-    {
-    case C_FUNC:
-        break;
-    case SCRIPT_FUNC:
-        free(cb->cb.script_func);
-        break;
-    default:
-        assert(FALSE);
-    }
-
-    free(cb);
-}
-
-void
-game_object_clear_render_callbacks(game_object_t *obj)
-{
-    int i;
-    for(i=0; i<obj->render_callbacks_len; i++)
-        if(obj->render_callbacks[i])
-            free_renders(obj->render_callbacks[i]);
+    obj->render_callback = cb;
 }
 
 void
 game_object_append_message(game_object_t *obj,
-                           game_object_t *sender,
-                           char *type,
-                           void *data)
+                           message_t mes)
 {
-    message_t mes = message_construct(sender, obj, type, data);
     obj->messages =
         memory_grow_to_size(obj->messages,
                             sizeof(*obj->messages),
@@ -303,4 +156,13 @@ game_object_clear_messages(game_object_t *obj)
     obj->messages = NULL;
     obj->messages_len = 0;
     obj->messages_cap = 0;
+}
+
+int
+game_object_recv_mes(game_object_t *obj, message_t mes)
+{
+    if(obj->recv_callback)
+        return (obj->recv_callback)(mes);
+
+    return 0;
 }
