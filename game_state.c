@@ -162,13 +162,17 @@ game_state_append_bcast_recvr(game_state_t *state, game_object_t *obj, unsigned 
 void
 game_state_deliver_message_sync(game_state_t *state, message_t message)
 {
-    /* TODO */
+    game_object_append_message(message.receiver, message);
 }
 
 void
 game_state_deliver_message_async(game_state_t *state, message_t message)
 {
-    if(message.receiver == NULL)
+    if(message.receiver)
+    {
+        game_object_recv_mes(message.receiver, message);
+    }
+    else
     {
         /* this is a broadcast message, look for listeners for given
          * type */
@@ -183,7 +187,6 @@ game_state_deliver_message_async(game_state_t *state, message_t message)
                 /* this object is listening for these */
                 int result = game_object_recv_mes(bcast_recv->obj,
                                                   message);
-                printf("result = %d\n", result);
                 if(result != 0)
                     break;
             }
