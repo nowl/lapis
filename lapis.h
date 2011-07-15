@@ -69,6 +69,7 @@ struct game_state
 
 enum callback_types
 {
+    NONE,
     C_FUNC,
     SCRIPT_FUNC
 };
@@ -100,9 +101,9 @@ struct game_object
 	int screenx;
 	int screeny;
 
-    update_callback_t   *update_callback;
-    render_callback_t   *render_callback;
-    recv_callback_fn     recv_callback; /* message receive callback */
+    update_callback_t   update_callback;
+    render_callback_t   render_callback;
+    recv_callback_fn    recv_callback; /* message receive callback */
     
     message_t *messages;
     size_t messages_len;

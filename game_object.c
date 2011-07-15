@@ -16,8 +16,8 @@ game_object_create(unsigned int type, void *data)
 	obj->image = NULL;
 	obj->screenx = 0;
 	obj->screeny = 0;
-    obj->update_callback = NULL;
-    obj->render_callback = NULL;
+    obj->update_callback.type = NONE;
+    obj->render_callback.type = NONE;
     obj->recv_callback = NULL;
     obj->messages = NULL;
     obj->messages_len = 0;
@@ -57,10 +57,10 @@ game_object_destroy(engine_t *eng, game_object_t *go)
     // TODO: ensure object is removed from all states
     game_state_remove_object(eng->state, go);
 
-    if(go->update_callback)
-        free(go->update_callback);
-    if(go->render_callback)
-        free(go->render_callback);
+    if(go->render_callback.type == SCRIPT_FUNC)
+        free(go->render_callback.cb.script_func);
+    if(go->update_callback.type == SCRIPT_FUNC)
+        free(go->update_callback.cb.script_func);
     
     remove_obj_by_id(go->id);
     free(go);
@@ -100,40 +100,32 @@ void
 game_object_set_update_callback_c_func(game_object_t *obj,
                                        const game_object_update_fn callback)
 {
-    update_callback_t *cb = malloc(sizeof(*cb));
-    cb->type = C_FUNC;
-    cb->cb.c_func = callback;
-    obj->update_callback = cb;
+    obj->update_callback.type = C_FUNC;
+    obj->update_callback.cb.c_func = callback;
 }
 
 void
 game_object_set_update_callback_script_func(game_object_t *obj,
                                             char *callback)
 {
-    update_callback_t *cb = malloc(sizeof(*cb));
-    cb->type = SCRIPT_FUNC;
-    cb->cb.script_func = strdup(callback);
-    obj->update_callback = cb;
+    obj->update_callback.type = SCRIPT_FUNC;
+    obj->update_callback.cb.script_func = strdup(callback);
 }
 
 void
 game_object_set_render_callback_c_func(game_object_t *obj,
                                        const game_object_render_fn callback)
 {
-    render_callback_t *cb = malloc(sizeof(*cb));
-    cb->type = C_FUNC;
-    cb->cb.c_func = callback;
-    obj->render_callback = cb;
+    obj->render_callback.type = C_FUNC;
+    obj->render_callback.cb.c_func = callback;
 }
 
 void
 game_object_set_render_callback_script_func(game_object_t *obj,
                                             char * callback)
 {
-    render_callback_t *cb = malloc(sizeof(*cb));
-    cb->type = SCRIPT_FUNC;
-    cb->cb.script_func = strdup(callback);
-    obj->render_callback = cb;
+    obj->render_callback.type = SCRIPT_FUNC;
+    obj->render_callback.cb.script_func = strdup(callback);
 }
 
 void
