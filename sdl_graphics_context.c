@@ -51,6 +51,7 @@ lsdl_dirty_rect(engine_t *engine, int x, int y, int w, int h)
     SDL_Rect *dirty_rects = engine->sdl_driver->dirty_rects;
     int dirty_rects_i = engine->sdl_driver->dirty_rects_i;
 
+    /* TODO: fix this to be a global screen width */
     /* do some manual clipping */
     if(x < 0) x = 0;
     if(x >= 800) x = 799;
@@ -90,12 +91,11 @@ erase_rects(engine_t *engine)
     SDL_Surface *screen = engine->sdl_driver->screen;
     SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 
-    // copy erased rects
-
+    // copy erased rects    
     memcpy(engine->sdl_driver->erase_rects,
 		   engine->sdl_driver->dirty_rects,
 		   engine->sdl_driver->dirty_rects_i * sizeof(*engine->sdl_driver->dirty_rects));
-    engine->sdl_driver->erase_rects_i = engine->sdl_driver->dirty_rects_i;
+    engine->sdl_driver->erase_rects_i = engine->sdl_driver->dirty_rects_i;    
 }
 
 void

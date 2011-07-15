@@ -35,7 +35,7 @@ typedef struct message message_t;
 //typedef void (*message_callback_func)(game_object_t *sender, game_object_t *receiver, void *data);
 typedef void (*game_object_update_fn)(engine_t *engine, game_object_t *obj, unsigned int ticks);
 typedef void (*game_object_render_fn)(engine_t *engine, game_object_t *obj, float interpolation);
-typedef int  (*recv_callback_fn)(message_t mes);
+typedef int  (*recv_callback_fn)(game_object_t *obj, message_t mes);
 
 struct message
 {

@@ -154,7 +154,7 @@ int
 game_object_recv_mes(game_object_t *obj, message_t mes)
 {
     if(obj->recv_callback)
-        return (obj->recv_callback)(mes);
+        return (obj->recv_callback)(obj, mes);
 
     return 0;
 }

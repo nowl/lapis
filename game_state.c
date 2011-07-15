@@ -51,7 +51,7 @@ game_state_render(engine_t *eng, float interpolation)
 {
     game_state_t *gs = eng->state;
 
-    //lsdl_free_font_surfaces();
+    lsdl_free_font_surfaces();
 
     int i;
     for(i=0; i<gs->objects_len; i++)
@@ -59,34 +59,19 @@ game_state_render(engine_t *eng, float interpolation)
         game_object_t *object = gs->objects[i];
         if(object)
         {
-/*
-            struct render_callback *callback = render_callback_list_SLL_NEXT(&object->render_callbacks, NULL);
-            while(callback) {
-
-                switch(callback->type)
-                {
-                case C_FUNC:
-                    callback->cb.c_func(eng, object, interpolation);
-                    break;
-                case SCRIPT_FUNC:
-                    eng->script_render_call(callback->cb.script_func, eng, object, interpolation);
-                    break;
-                default:
-                    assert(FALSE);
-                }
-                
-                // go to the next one
-                callback = render_callback_list_SLL_NEXT(&object->render_callbacks, callback);
+            switch(object->render_callback.type)
+            {
+            case C_FUNC:
+                object->render_callback.cb.c_func(eng, object, interpolation);
+                break;
+            case SCRIPT_FUNC:
+                //eng->script_render_call(object->render_callback.cb.script_func, eng, object, interpolation);
+                break;
+            case NONE:
+                break;
+            default:
+                assert(FALSE);
             }
-*/
-            /*
-              if(object->image)
-              black_sdl_draw_image(eng, object->image, object->screenx, object->screeny);
-            */
-            
-//            entry = game_object_list_SLL_NEXT(&gs->objects, entry);
-//        }
-        
         }
     }
     

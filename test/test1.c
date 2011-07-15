@@ -1,31 +1,48 @@
 #include "lapis.h"
 
-int message_handler_2(message_t mes)
+typedef struct
 {
-    if(mes.type == message_type_hash("sdl-event"))
-    {
-        SDL_Event event = *(SDL_Event *)mes.data;
-        if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_a)
-        {
-            LOG("pressed a\n");
-            return 1;
-        }
-    }
+    int x, y;
+} player_object_t;
 
-    return 0;
-}                    
-
-int message_handler(message_t mes)
+int message_handler_2(game_object_t *obj, message_t mes)
 {
     if(mes.type == message_type_hash("sdl-event"))
     {
         SDL_Event event = *(SDL_Event *)mes.data;
         if(event.type == SDL_KEYDOWN)
         {
-            if(event.key.keysym.sym == SDLK_ESCAPE)
+            switch(event.key.keysym.sym)
             {
-                engine_quit(lapis_get_engine());
+            case SDLK_a:
+                LOG("pressed a\n");
                 return 1;
+            case SDLK_UP:
+            {
+                player_object_t *data = obj->data;
+                data->y -=5;
+                return 1;
+            }
+            case SDLK_DOWN:
+            {
+                player_object_t *data = obj->data;
+                data->y +=5;
+                return 1;
+            }
+            case SDLK_LEFT:
+            {
+                player_object_t *data = obj->data;
+                data->x -=5;
+                return 1;
+            }
+            case SDLK_RIGHT:
+            {
+                player_object_t *data = obj->data;
+                data->x +=5;
+                return 1;
+            }
+            default:
+                break;
             }
         }
     }
@@ -33,11 +50,40 @@ int message_handler(message_t mes)
     return 0;
 }                    
 
+int message_handler(game_object_t *obj, message_t mes)
+{
+    if(mes.type == message_type_hash("sdl-event"))
+    {
+        SDL_Event event = *(SDL_Event *)mes.data;
+        if(event.type == SDL_KEYDOWN)
+        {
+            switch(event.key.keysym.sym)
+            {
+            case SDLK_ESCAPE:
+                engine_quit(lapis_get_engine());
+                return 1;
+            default:
+                break;
+            }
+        }
+    }
+
+    return 0;
+}                    
+
+void render_1(engine_t *engine, game_object_t *obj, float interpolation)
+{
+    player_object_t *data = obj->data;
+    lsdl_draw_image(engine, image_loader_get("test"), data->x, data->y);
+    //lsdl_fill_rect(engine, data->x, data->y, 64, 64, 0, 0, 200);
+}
+
 int main(int argc, char *argv[])
 {
     lapis_init();
 
     engine_t *engine = lapis_get_engine();
+    set_ticks_per_second(60);
 
     game_state_t *state = game_state_create(0);
 
@@ -46,7 +92,12 @@ int main(int argc, char *argv[])
     /* initialize video */
     
     lsdl_set_video_mode(engine->sdl_driver,
-                        1024, 768, 0);
+                        800, 600, 0);
+
+    SDL_EnableKeyRepeat(500, 50);
+
+    /* load graphics */
+    image_loader_load("test", "screenshot1.jpg", 100, 100, 32, 32);
 
     /* create object */
 
@@ -55,10 +106,15 @@ int main(int argc, char *argv[])
     game_object_set_recv_callback_c_func(obj1, message_handler);
     game_state_append_bcast_recvr(state, obj1, message_type_hash("sdl-event"));
     
-    game_object_t * obj2 = game_object_create(1, NULL);
+    player_object_t player_data;
+    player_data.x = 400;
+    player_data.y = 400;
+
+    game_object_t * obj2 = game_object_create(1, &player_data);
     game_state_append_object(state, obj2);
     game_object_set_recv_callback_c_func(obj2, message_handler_2);
     game_state_append_bcast_recvr(state, obj2, message_type_hash("sdl-event"));
+    game_object_set_render_callback_c_func(obj2, render_1);
         
     //engine_quit(engine);
 

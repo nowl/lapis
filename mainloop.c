@@ -1,6 +1,6 @@
 #include "lapis.h"
 
-static unsigned int ticks_per_second;
+static unsigned int ticks_per_second = 15;
 static float time_per_tick;
 static unsigned int max_frame_skip = 5;
 
@@ -37,7 +37,6 @@ mainloop(engine_t* eng)
         while(tick > next_game_tick && loops < max_frame_skip)
         {
             engine_update(eng, game_tick++);
-
             next_game_tick += time_per_tick;
             loops++;
 
@@ -53,6 +52,7 @@ mainloop(engine_t* eng)
             eng->fps = fps_counter;
 			fps_counter = 0;
 			fps_start_time = lsdl_get_tick();
+            LOG("fps = %d\n", eng->fps);
 		}
     }
 }

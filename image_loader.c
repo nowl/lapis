@@ -8,8 +8,8 @@ static struct {
     /* reference to the surface object returned from loading a surface through SDL_image */
     SDL_Surface *surface;
 
-    /* a copy of a string representing the alias of this image */
-    char *alias;
+    /* a hashed version of the string representing the alias of this image */
+    unsigned long alias_hash;
 } *cache = NULL;
 static size_t cache_len = 0;
 static size_t cache_cap = 0;
@@ -88,9 +88,9 @@ image_loader_load(char *alias,
                                 cache_len);
 
     cache[index].surface = image;
-    cache[index].alias = strdup(alias);
+    cache[index].alias_hash = message_type_hash(alias);
 
-    LOG("cached cropped surface with alias \"%s\"\n", alias);
+    LOG("cached cropped surface with alias \"%s\" -> hash (0x%lx)\n", alias, cache[index].alias_hash);
 
     return 0;
 }
@@ -99,13 +99,11 @@ SDL_Surface *
 image_loader_get(char *alias)
 {
     int i;
+    unsigned long hash = message_type_hash(alias);
     for(i=0; i<cache_len; i++)
     {
-        if( strcmp(cache[i].alias, alias) == 0 )
-        {
-            LOG("grabbed image %p for alias \"%s\"\n", &cache[i], alias);
+        if(cache[i].alias_hash == hash)
             return cache[i].surface;
-        }
     }
     
     ERROR("couldn't find cached image for alias \"%s\"\n", alias);
@@ -117,10 +115,7 @@ image_loader_cleanup()
 {
     int i;
     for(i=0; i<cache_len; i++)
-    {
         SDL_FreeSurface(cache[i].surface);
-        free(cache[i].alias);
-    }
 
     free(cache);
     cache = NULL;
