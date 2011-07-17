@@ -5,6 +5,8 @@
 #include <assert.h>
 
 #include <SDL.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
@@ -131,14 +133,6 @@ struct engine
 struct sdl_graphics_context
 {
     SDL_Surface* screen;
-
-    SDL_Rect *dirty_rects;
-    int dirty_rects_i;
-    SDL_Rect *erase_rects;
-    int erase_rects_i;
-
-    /* flag that determines whether to use dirty rects or not */
-	int full_screen_update;
 };
 
 /* sdl_graphics_context */
@@ -148,14 +142,13 @@ void lsdl_set_video_mode(sdl_graphics_context_t* gc,
                          unsigned int screen_width,
                          unsigned int screen_height,
                          unsigned char fullscreen);
-void lsdl_fill_rect(engine_t *manager, int x, int y, 
-                    int w, int h, 
-                    int red, int green, int blue);
-void lsdl_dirty_rect(engine_t *manager, int x, int y, 
-                     int w, int h);
+void lsdl_fill_rect(engine_t *manager, float x, float y, 
+                    float w, float h, 
+                    float red, float green, float blue);
 void lsdl_draw_image(engine_t *manager, SDL_Surface *surf, 
-                     int x, int y);
+                     float x, float y);
 void lsdl_flip(engine_t * manager);
+void lsdl_prepare_render();
 
 /* lapis */
 

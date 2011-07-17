@@ -53,6 +53,8 @@ game_state_render(engine_t *eng, float interpolation)
 
     lsdl_free_font_surfaces();
 
+    lsdl_prepare_render();
+
     int i;
     for(i=0; i<gs->objects_len; i++)
     {

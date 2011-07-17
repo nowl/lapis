@@ -20,25 +20,25 @@ int message_handler_2(game_object_t *obj, message_t mes)
             case SDLK_UP:
             {
                 player_object_t *data = obj->data;
-                data->y -=5;
+                data->y -=10;
                 return 1;
             }
             case SDLK_DOWN:
             {
                 player_object_t *data = obj->data;
-                data->y +=5;
+                data->y +=10;
                 return 1;
             }
             case SDLK_LEFT:
             {
                 player_object_t *data = obj->data;
-                data->x -=5;
+                data->x -=10;
                 return 1;
             }
             case SDLK_RIGHT:
             {
                 player_object_t *data = obj->data;
-                data->x +=5;
+                data->x +=10;
                 return 1;
             }
             default:
@@ -74,8 +74,8 @@ int message_handler(game_object_t *obj, message_t mes)
 void render_1(engine_t *engine, game_object_t *obj, float interpolation)
 {
     player_object_t *data = obj->data;
-    lsdl_draw_image(engine, image_loader_get("test"), data->x, data->y);
-    //lsdl_fill_rect(engine, data->x, data->y, 64, 64, 0, 0, 200);
+    //lsdl_draw_image(engine, image_loader_get("test"), data->x, data->y);
+    lsdl_fill_rect(engine, data->x, data->y, 10, 10, 0, 0, 0.8);
 }
 
 int main(int argc, char *argv[])
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
     
     player_object_t player_data;
     player_data.x = 400;
-    player_data.y = 400;
+    player_data.y = 300;
 
     game_object_t * obj2 = game_object_create(1, &player_data);
     game_state_append_object(state, obj2);
