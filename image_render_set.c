@@ -1,7 +1,7 @@
 #include "lapis.h"
 
 struct keyframe {
-    SDL_Surface *image;
+    GLuint texture;
     unsigned int num_ticks;
 };
 
@@ -61,11 +61,11 @@ image_render_set_add(char *name, char *image_name, int num_ticks)
                             &set[ind].cap_frames,
                             set[ind].num_frames + 1);
 
-    SDL_Surface *surface = image_loader_get(image_name);
+    GLuint texture = image_loader_get(image_name);
     struct keyframe *frame = malloc(sizeof(*frame));
-    frame->image = surface;
+    frame->texture = texture;
     frame->num_ticks = num_ticks;
-    LOG("assigning surface at address %p\n", surface);
+    LOG("assigning texture at id %d\n", texture);
     set[ind].frames[set[ind].num_frames++] = frame;
     LOG("adding %d frames of %s to %s\n", num_ticks, image_name, name);
 }
@@ -90,17 +90,17 @@ image_render_set_cleanup()
     set_cap = 0;
 }
 
-SDL_Surface *
+GLuint
 image_render_set_get_image(char *name, int cur_tick)
 {
     int ind = get_set(name);
     if(ind < 0)
     {
         ERROR("attempting to grab an image from a nonexistant render_set \"%s\"\n", name);
-        return NULL;
+        return 0;
     }
 
-    SDL_Surface *result;
+    GLuint result;
 
     /* hack to skip loop if only one frame */
     if(set[ind].num_frames > 1)
@@ -118,9 +118,9 @@ image_render_set_get_image(char *name, int cur_tick)
 
         frame = (frame + skip_frames) % set[ind].num_frames;
         
-        result = set[ind].frames[frame]->image;
+        result = set[ind].frames[frame]->texture;
     } else {
-        result = set[ind].frames[0]->image;
+        result = set[ind].frames[0]->texture;
     }
 
     return result;

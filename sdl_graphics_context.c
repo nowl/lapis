@@ -43,6 +43,7 @@ lsdl_set_video_mode(sdl_graphics_context_t* gc,
     glOrtho(0, screen_width, screen_height, 0, 0, 1);
 
     glDisable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);    
 }
 
 void
@@ -59,12 +60,22 @@ lsdl_fill_rect(engine_t *engine, float x, float y, float w, float h, float red, 
 }
 
 void
-lsdl_draw_image(engine_t *engine, SDL_Surface *surf, float x, float y)
+lsdl_draw_image(engine_t *engine, GLuint texture, float x, float y, float w, float h)
 {
-    SDL_Surface *screen = engine->sdl_driver->screen;
+    glBindTexture(GL_TEXTURE_2D, texture);
+    
+    glBegin(GL_QUADS);
+    glTexCoord2f(0, 0);
+    glVertex2f(x, y);
+    glTexCoord2f(1, 0);
+    glVertex2f(x+w, y);
+    glTexCoord2f(1, 1);
+    glVertex2f(x+w, y+h);
+    glTexCoord2f(0, 1);
+    glVertex2f(x, y+h);
+    glEnd();
 
-    SDL_Rect dest_rect = {x, y, 0, 0};
-    SDL_BlitSurface(surf, NULL, screen, &dest_rect);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void

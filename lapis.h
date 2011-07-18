@@ -145,8 +145,8 @@ void lsdl_set_video_mode(sdl_graphics_context_t* gc,
 void lsdl_fill_rect(engine_t *manager, float x, float y, 
                     float w, float h, 
                     float red, float green, float blue);
-void lsdl_draw_image(engine_t *manager, SDL_Surface *surf, 
-                     float x, float y);
+void lsdl_draw_image(engine_t *manager, GLuint texture,
+                     float x, float y, float w, float h);
 void lsdl_flip(engine_t * manager);
 void lsdl_prepare_render();
 
@@ -265,15 +265,15 @@ image_loader_load(char *alias,
                   int width,
                   int height);
 
-SDL_Surface *image_loader_get(char *alias);
-void         image_loader_cleanup();
+GLuint     image_loader_get(char *alias);
+void       image_loader_cleanup();
 
 /* image_render_set */
 
 void          image_render_set_create(char *name);
 void          image_render_set_add(char *name, char *image_name, int num_ticks);
 void          image_render_set_cleanup();
-SDL_Surface * image_render_set_get_image(char *name, int cur_tick);
+GLuint        image_render_set_get_image(char *name, int cur_tick);
 
 /* collide */
 

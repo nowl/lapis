@@ -74,8 +74,8 @@ int message_handler(game_object_t *obj, message_t mes)
 void render_1(engine_t *engine, game_object_t *obj, float interpolation)
 {
     player_object_t *data = obj->data;
-    //lsdl_draw_image(engine, image_loader_get("test"), data->x, data->y);
-    lsdl_fill_rect(engine, data->x, data->y, 10, 10, 0, 0, 0.8);
+    lsdl_draw_image(engine, image_render_set_get_image("test_set", 5), data->x, data->y, 32, 32);
+    //lsdl_fill_rect(engine, data->x, data->y, 10, 10, 0, 0, 0.8);
 }
 
 int main(int argc, char *argv[])
@@ -97,7 +97,12 @@ int main(int argc, char *argv[])
     SDL_EnableKeyRepeat(500, 50);
 
     /* load graphics */
-    image_loader_load("test", "screenshot1.jpg", 100, 100, 32, 32);
+    image_loader_load("test1", "screenshot1.jpg", 100, 100, 32, 32);
+    image_loader_load("test2", "screenshot1.jpg", 110, 110, 32, 32);
+
+    image_render_set_create("test_set");
+    image_render_set_add("test_set", "test1", 10);
+    image_render_set_add("test_set", "test2", 10);
 
     /* create object */
 
@@ -116,17 +121,6 @@ int main(int argc, char *argv[])
     game_state_append_bcast_recvr(state, obj2, message_type_hash("sdl-event"));
     game_object_set_render_callback_c_func(obj2, render_1);
         
-    //engine_quit(engine);
-
-    image_loader_load("test", "screenshot1.jpg", 
-                      0, 0, 16, 16);
-
-    SDL_Surface* s = image_loader_get("test");
-    
-    image_render_set_create("test_set");
-    image_render_set_add("test_set", "test", 10);
-    image_render_set_get_image("test_set", 10);
-
     lapis_mainloop();
 
     /* this will be cleaned up by the OS */
