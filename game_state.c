@@ -91,45 +91,21 @@ game_state_update(engine_t *eng, unsigned int ticks)
         game_object_t *object = gs->objects[i];
         if(object)
         {
-            /*
+            game_object_process_messages(object);
 
-            // process message list
-            struct message *message = message_list_SLL_NEXT(&object->message_list, NULL);
-            while(message) {
-                message->callback_func(message->sender, message->receiver);
-
-                message = message_list_SLL_NEXT(&object->message_list, message);
+            switch(object->update_callback.type)
+            {
+            case C_FUNC:
+                object->update_callback.cb.c_func(eng, object, ticks);
+                break;
+            case SCRIPT_FUNC:
+                //eng->script_update_call(object->update_callback.cb.script_func, eng, object, ticks);
+                break;
+            case NONE:
+                break;
+            default:
+                assert(FALSE);
             }
-
-            // clear message list
-            game_object_clear_messages(object);
-
-            // process update callbacks
-            
-            struct update_callback *callback = update_callback_list_SLL_NEXT(&object->update_callbacks, NULL);
-            while(callback) {
-
-                // call the update function, it is the responsibility of the update function to continue popping events
-                // as it needs them and to even exhaust them all if they are applicable to that update function
-                
-                switch(callback->type)
-                {
-                case C_FUNC:
-                    callback->cb.c_func(eng, object, ticks);
-                    break;
-                case SCRIPT_FUNC:
-                    eng->script_update_call(callback->cb.script_func, eng, object, ticks);
-                    break;
-                default:
-                    assert(FALSE);
-                }
-                
-                // go to the next one
-                callback = update_callback_list_SLL_NEXT(&object->update_callbacks, callback);
-            }
-            
-            entry = game_object_list_SLL_NEXT(&gs->objects, entry);
-            */
         }
     }
 }

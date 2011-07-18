@@ -222,6 +222,7 @@ void               game_object_append_message(game_object_t *obj,
                                               message_t mes);
 void               game_object_clear_messages(game_object_t *obj);
 int                game_object_recv_mes(game_object_t *obj, message_t mes);
+void               game_object_process_messages(game_object_t *obj);
 
 /* message */
 

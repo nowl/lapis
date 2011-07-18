@@ -158,3 +158,12 @@ game_object_recv_mes(game_object_t *obj, message_t mes)
 
     return 0;
 }
+
+void
+game_object_process_messages(game_object_t *obj)
+{
+    int i=0;
+    for(i=0; i<obj->messages_len; i++)
+        game_object_recv_mes(obj, obj->messages[i]);
+    game_object_clear_messages(obj);
+}
