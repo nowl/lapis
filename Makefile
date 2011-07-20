@@ -18,7 +18,8 @@ SRCS = \
 	image_loader.c \
 	image_render_set.c \
 	collide.c \
-	astar.c
+	astar.c \
+	random.c
 
 OBJS = $(SRCS:.c=.o)
 

@@ -5,6 +5,8 @@ static engine_t *engine = NULL;
 int
 lapis_init()
 {
+    random_init();
+
     if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0 )
     {
         WARN("Unable to init SDL: %s\n", SDL_GetError());

@@ -3,6 +3,8 @@
 
 #include <memory.h>
 #include <assert.h>
+#include <time.h>
+#include <limits.h>
 
 #include <SDL.h>
 #include <GL/gl.h>
@@ -203,7 +205,7 @@ void sound_loader_cleanup();
 
 /* game_object */
 
-game_object_t     *game_object_create(unsigned int type, void *data);
+game_object_t     *game_object_create(void *data);
 void               game_object_destroy(engine_t *eng, game_object_t *go);
 game_object_t     *game_object_get(int id);
 game_object_t     *game_object_remove(game_object_t *obj);
@@ -309,5 +311,12 @@ void astar_best_path(struct astar_pos_t begin,
 					 struct astar_pos_t end);
 astar_pos_vector_t astar_retrieve_path();
 int astar_retrieve_path_length();
+
+/* random */
+
+unsigned long random_ul();
+void          random_init();
+float         random_float();
+int           random_int_min_max(int min, int max);
 
 #endif  /* __LAPIS_H__ */

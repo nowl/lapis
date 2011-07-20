@@ -7,11 +7,10 @@ static size_t objects_len = 0;
 static size_t objects_cap = 0;
 
 game_object_t *
-game_object_create(unsigned int type, void *data)
+game_object_create(void *data)
 {
     game_object_t *obj = malloc(sizeof(*obj));
     obj->id = global_id_counter++;
-    obj->type = type;
     obj->data = data;
 	obj->image = NULL;
 	obj->screenx = 0;
