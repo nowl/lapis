@@ -22,7 +22,7 @@ jenkins_hash_char(void* key)
 }
 
 unsigned long
-message_type_hash(char *type)
+lapis_hash(char *type)
 {
     return jenkins_hash_char(type);
 }
@@ -39,7 +39,7 @@ message_create(game_object_t *sender,
     mes->sender = sender;
     mes->receiver = receiver;
     mes->callback_func = callback_func;
-    mes->type = message_type_hash(type);
+    mes->type = hash(type);
     mes->data = data;
     return mes;
 }
@@ -54,7 +54,7 @@ message_construct(game_object_t *sender,
     message_t mes;
     mes.sender = sender;
     mes.receiver = receiver;
-    mes.type = message_type_hash(type);
+    mes.type = lapis_hash(type);
     mes.data = data;
     return mes;
 }

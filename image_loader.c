@@ -146,7 +146,7 @@ image_loader_load(char *alias,
         SDL_FreeSurface(image);
     
     cache[index].texture = texture;
-    cache[index].alias_hash = message_type_hash(alias);
+    cache[index].alias_hash = lapis_hash(alias);
 
     LOG("cached cropped surface with alias \"%s\" -> hash (0x%lx) to texture id %d\n", alias, cache[index].alias_hash, texture);
 
@@ -157,7 +157,7 @@ GLuint
 image_loader_get(char *alias)
 {
     int i;
-    unsigned long hash = message_type_hash(alias);
+    unsigned long hash = lapis_hash(alias);
     for(i=0; i<cache_len; i++)
     {
         if(cache[i].alias_hash == hash)

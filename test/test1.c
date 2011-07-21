@@ -9,7 +9,7 @@ typedef struct
 
 int message_handler_2(game_object_t *obj, message_t mes)
 {
-    if(mes.type == message_type_hash("sdl-event"))
+    if(mes.type == lapis_hash("sdl-event"))
     {
         SDL_Event event = *(SDL_Event *)mes.data;
         if(event.type == SDL_KEYDOWN)
@@ -54,7 +54,7 @@ int message_handler_2(game_object_t *obj, message_t mes)
 
 int message_handler(game_object_t *obj, message_t mes)
 {
-    if(mes.type == message_type_hash("sdl-event"))
+    if(mes.type == lapis_hash("sdl-event"))
     {
         SDL_Event event = *(SDL_Event *)mes.data;
         if(event.type == SDL_KEYDOWN)
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
     game_object_t * obj1 = game_object_create(0, NULL);
     game_state_append_object(state, obj1);
     game_object_set_recv_callback_c_func(obj1, message_handler);
-    game_state_append_bcast_recvr(state, obj1, message_type_hash("sdl-event"));
+    game_state_append_bcast_recvr(state, obj1, lapis_hash("sdl-event"));
     
     player_object_t player_data;
     player_data.x = 400;
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
     game_object_t * obj2 = game_object_create(1, &player_data);
     game_state_append_object(state, obj2);
     game_object_set_recv_callback_c_func(obj2, message_handler_2);
-    game_state_append_bcast_recvr(state, obj2, message_type_hash("sdl-event"));
+    game_state_append_bcast_recvr(state, obj2, lapis_hash("sdl-event"));
     game_object_set_render_callback_c_func(obj2, render_1);
     game_object_set_update_callback_c_func(obj2, update_1);
         

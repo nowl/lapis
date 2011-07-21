@@ -241,7 +241,7 @@ message_t   message_construct(game_object_t         *sender,
                               char                  *type,
                               void                  *data);
 
-unsigned long message_type_hash(char *type);
+unsigned long lapis_hash(char *type);
 
 /* message deliver type */
 enum

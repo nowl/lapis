@@ -125,7 +125,10 @@ game_state_append_bcast_recvr(game_state_t *state, game_object_t *obj, unsigned 
 void
 game_state_deliver_message_sync(game_state_t *state, message_t message)
 {
-    game_object_append_message(message.receiver, message);
+    if(message.receiver)
+        game_object_append_message(message.receiver, message);
+    else
+        WARN("synchronous message has no receiver\n");
 }
 
 void
