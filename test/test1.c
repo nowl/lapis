@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 
     /* create object */
 
-    game_object_t * obj1 = game_object_create(0, NULL);
+    game_object_t * obj1 = game_object_create("test", NULL);
     game_state_append_object(state, obj1);
     game_object_set_recv_callback_c_func(obj1, message_handler);
     game_state_append_bcast_recvr(state, obj1, lapis_hash("sdl-event"));
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
     player_data.anim_frame = 0;
     player_data.num_frames = 120;
 
-    game_object_t * obj2 = game_object_create(1, &player_data);
+    game_object_t * obj2 = game_object_create("test2", &player_data);
     game_state_append_object(state, obj2);
     game_object_set_recv_callback_c_func(obj2, message_handler_2);
     game_state_append_bcast_recvr(state, obj2, lapis_hash("sdl-event"));

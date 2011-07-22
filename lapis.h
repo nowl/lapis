@@ -99,6 +99,7 @@ struct render_callback {
 struct game_object
 {
     unsigned long id;
+    unsigned long name;
     unsigned int type;
     void *data;
 	SDL_Surface *image;
@@ -186,7 +187,7 @@ void           game_state_update(engine_t *, unsigned int ticks);
 void           game_state_render(engine_t *, float interpolation);
 void           game_state_append_object(game_state_t *, game_object_t *);
 game_object_t* game_state_remove_object(game_state_t *, game_object_t *);
-void           game_state_append_bcast_recvr(game_state_t *state, game_object_t *obj, unsigned long hash);
+void           game_state_append_bcast_recvr(game_state_t *state, game_object_t *obj, char *name);
 void           game_state_deliver_message_sync(game_state_t *state, message_t message);
 void           game_state_deliver_message_async(game_state_t *state, message_t message);
 
@@ -205,9 +206,10 @@ void sound_loader_cleanup();
 
 /* game_object */
 
-game_object_t     *game_object_create(void *data);
+game_object_t     *game_object_create(char *name, void *data);
 void               game_object_destroy(engine_t *eng, game_object_t *go);
 game_object_t     *game_object_get(int id);
+game_object_t     *game_object_get_by_name(char *name);
 game_object_t     *game_object_remove(game_object_t *obj);
 game_object_t     *game_object_remove_by_id(int id);
 void               game_object_set_recv_callback_c_func(game_object_t *obj,

@@ -7,10 +7,11 @@ static size_t objects_len = 0;
 static size_t objects_cap = 0;
 
 game_object_t *
-game_object_create(void *data)
+game_object_create(char *name, void *data)
 {
     game_object_t *obj = malloc(sizeof(*obj));
     obj->id = global_id_counter++;
+    obj->name = lapis_hash(name);
     obj->data = data;
 	obj->image = NULL;
 	obj->screenx = 0;
@@ -71,6 +72,19 @@ game_object_get(int id)
     int i;
     for(i=0; i<objects_len; i++)
         if(objects[i] && (objects[i]->id == id))
+            return objects[i];
+
+    return NULL;
+}
+
+game_object_t *
+game_object_get_by_name(char *name)
+{
+    unsigned int hash = lapis_hash(name);
+
+    int i;
+    for(i=0; i<objects_len; i++)
+        if(objects[i] && (objects[i]->name == hash))
             return objects[i];
 
     return NULL;

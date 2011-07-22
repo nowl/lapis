@@ -111,14 +111,14 @@ game_state_update(engine_t *eng, unsigned int ticks)
 }
 
 void
-game_state_append_bcast_recvr(game_state_t *state, game_object_t *obj, unsigned long hash)
+game_state_append_bcast_recvr(game_state_t *state, game_object_t *obj, char *name)
 {
     state->bcast_recvrs = memory_grow_to_size(state->bcast_recvrs,
                                               sizeof(*state->bcast_recvrs),
                                               &state->bcast_recvrs_cap,
                                               state->bcast_recvrs_len + 1);
     state->bcast_recvrs[state->bcast_recvrs_len].obj = obj;
-    state->bcast_recvrs[state->bcast_recvrs_len].hash = hash;
+    state->bcast_recvrs[state->bcast_recvrs_len].hash = lapis_hash(name);
     state->bcast_recvrs_len++;
 }
 
@@ -128,7 +128,22 @@ game_state_deliver_message_sync(game_state_t *state, message_t message)
     if(message.receiver)
         game_object_append_message(message.receiver, message);
     else
-        WARN("synchronous message has no receiver\n");
+    {
+        /* this is a broadcast message, look for listeners for given
+         * type */
+        unsigned long type = message.type;
+
+        int i;
+        for(i=0; i<state->bcast_recvrs_len; i++)
+        {
+            bcast_recvr_t *bcast_recv = &state->bcast_recvrs[i];
+            if(bcast_recv->hash == type)
+            {
+                /* this object is listening for these */
+                game_object_append_message(bcast_recv->obj, message);
+            }
+        }
+    }
 }
 
 void
@@ -156,6 +171,6 @@ game_state_deliver_message_async(game_state_t *state, message_t message)
                 if(result != 0)
                     break;
             }
-        }        
+        }
     }
 }
