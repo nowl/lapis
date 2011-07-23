@@ -149,7 +149,8 @@ void lsdl_fill_rect(engine_t *manager, float x, float y,
                     float w, float h, 
                     float red, float green, float blue);
 void lsdl_draw_image(engine_t *manager, GLuint texture,
-                     float x, float y, float w, float h);
+                     float x, float y, float w, float h,
+                     float brightness);
 void lsdl_flip(engine_t * manager);
 void lsdl_prepare_render();
 
