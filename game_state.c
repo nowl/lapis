@@ -123,15 +123,15 @@ game_state_append_bcast_recvr(game_state_t *state, game_object_t *obj, char *nam
 }
 
 void
-game_state_deliver_message_sync(game_state_t *state, message_t message)
+game_state_deliver_message_sync(game_state_t *state, message_t *message)
 {
-    if(message.receiver)
-        game_object_append_message(message.receiver, message);
+    if(message->receiver)
+        game_object_append_message(message->receiver, message);
     else
     {
         /* this is a broadcast message, look for listeners for given
          * type */
-        unsigned long type = message.type;
+        unsigned long type = message->type;
 
         int i;
         for(i=0; i<state->bcast_recvrs_len; i++)
@@ -147,17 +147,17 @@ game_state_deliver_message_sync(game_state_t *state, message_t message)
 }
 
 void
-game_state_deliver_message_async(game_state_t *state, message_t message)
+game_state_deliver_message_async(game_state_t *state, message_t *message)
 {
-    if(message.receiver)
+    if(message->receiver)
     {
-        game_object_recv_mes(message.receiver, message);
+        game_object_recv_mes(message->receiver, message);
     }
     else
     {
         /* this is a broadcast message, look for listeners for given
          * type */
-        unsigned long type = message.type;
+        unsigned long type = message->type;
 
         int i;
         for(i=0; i<state->bcast_recvrs_len; i++)
@@ -166,11 +166,12 @@ game_state_deliver_message_async(game_state_t *state, message_t message)
             if(bcast_recv->hash == type)
             {
                 /* this object is listening for these */
-                int result = game_object_recv_mes(bcast_recv->obj,
-                                                  message);
+                int result = game_object_recv_mes(bcast_recv->obj, message);
                 if(result != 0)
                     break;
             }
         }
     }
+
+    message_destroy(message);
 }

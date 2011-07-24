@@ -27,48 +27,50 @@ lapis_hash(char *type)
     return jenkins_hash_char(type);
 }
 
-/*
 message_t *
 message_create(game_object_t *sender,
                game_object_t *receiver, 
-               message_callback_func callback_func,
                char *type,
-               void *data)
+               void *data,
+               char own_data)
 {
     message_t *mes = malloc(sizeof(*mes));
     mes->sender = sender;
     mes->receiver = receiver;
-    mes->callback_func = callback_func;
-    mes->type = hash(type);
+    mes->type = lapis_hash(type);
     mes->data = data;
+    mes->own_data = own_data;
     return mes;
 }
-*/
 
+/*
 message_t
 message_construct(game_object_t *sender,
                   game_object_t *receiver,
                   char *type,
-                  void *data)
+                  void *data,
+                  char own_data)
 {
     message_t mes;
     mes.sender = sender;
     mes.receiver = receiver;
     mes.type = lapis_hash(type);
     mes.data = data;
+    mes.own_data = own_data;
     return mes;
-}
-
-/*
-void
-message_destroy(message_t *message)
-{
-    free(message);
 }
 */
 
 void
-message_deliver(message_t mes, int type)
+message_destroy(message_t *message)
+{
+    if(message->own_data)
+        free(message->data);
+    free(message);
+}
+
+void
+message_deliver(message_t *mes, int type)
 {
     game_state_t * state = lapis_get_engine()->state;
     switch(type)

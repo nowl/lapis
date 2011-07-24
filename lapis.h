@@ -39,13 +39,14 @@ typedef struct message message_t;
 //typedef void (*message_callback_func)(game_object_t *sender, game_object_t *receiver, void *data);
 typedef void (*game_object_update_fn)(engine_t *engine, game_object_t *obj, unsigned int ticks);
 typedef void (*game_object_render_fn)(engine_t *engine, game_object_t *obj, float interpolation);
-typedef int  (*recv_callback_fn)(game_object_t *obj, message_t mes);
+typedef int  (*recv_callback_fn)(game_object_t *obj, message_t *mes);
 
 struct message
 {
     game_object_t *sender, *receiver;
     unsigned long type;
     void *data;
+    char own_data;
 };
 
 struct bcast_recvr
@@ -110,7 +111,7 @@ struct game_object
     render_callback_t   render_callback;
     recv_callback_fn    recv_callback; /* message receive callback */
     
-    message_t *messages;
+    message_t **messages;
     size_t messages_len;
     size_t messages_cap;
 };
@@ -189,8 +190,8 @@ void           game_state_render(engine_t *, float interpolation);
 void           game_state_append_object(game_state_t *, game_object_t *);
 game_object_t* game_state_remove_object(game_state_t *, game_object_t *);
 void           game_state_append_bcast_recvr(game_state_t *state, game_object_t *obj, char *name);
-void           game_state_deliver_message_sync(game_state_t *state, message_t message);
-void           game_state_deliver_message_async(game_state_t *state, message_t message);
+void           game_state_deliver_message_sync(game_state_t *state, message_t *message);
+void           game_state_deliver_message_async(game_state_t *state, message_t *message);
 
 /* sdl_font */
 
@@ -224,25 +225,26 @@ void               game_object_set_render_callback_c_func(game_object_t *obj,
 void               game_object_set_render_callback_script_func(game_object_t *obj,
                                                                char * callback);
 void               game_object_append_message(game_object_t *obj,
-                                              message_t mes);
+                                              message_t *mes);
 void               game_object_clear_messages(game_object_t *obj);
-int                game_object_recv_mes(game_object_t *obj, message_t mes);
+int                game_object_recv_mes(game_object_t *obj, message_t *mes);
 void               game_object_process_messages(game_object_t *obj);
 
 /* message */
 
-/*
 message_t * message_create(game_object_t            *sender,
                            game_object_t            *receiver,
-                           message_callback_func     callback_func,
                            char                     *type,
-                           void                     *data);
+                           void                     *data,
+                           char                      own_data);
 void        message_destroy(message_t               *message);
-*/
+
+/*
 message_t   message_construct(game_object_t         *sender,
                               game_object_t         *receiver,
                               char                  *type,
                               void                  *data);
+*/
 
 unsigned long lapis_hash(char *type);
 
@@ -253,7 +255,7 @@ enum
     ASYNC
 };
 
-void message_deliver(message_t mes, int type);
+void message_deliver(message_t *mes, int type);
 
 /* mainloop */
 

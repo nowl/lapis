@@ -57,6 +57,12 @@ game_object_destroy(engine_t *eng, game_object_t *go)
     // TODO: ensure object is removed from all states
     game_state_remove_object(eng->state, go);
 
+    if(go->messages)
+    {
+        game_object_clear_messages(go);
+        free(go->messages);
+    }
+
     if(go->render_callback.type == SCRIPT_FUNC)
         free(go->render_callback.cb.script_func);
     if(go->update_callback.type == SCRIPT_FUNC)
@@ -143,7 +149,7 @@ game_object_set_render_callback_script_func(game_object_t *obj,
 
 void
 game_object_append_message(game_object_t *obj,
-                           message_t mes)
+                           message_t *mes)
 {
     obj->messages =
         memory_grow_to_size(obj->messages,
@@ -157,14 +163,15 @@ game_object_append_message(game_object_t *obj,
 void
 game_object_clear_messages(game_object_t *obj)
 {
-    free(obj->messages);
-    obj->messages = NULL;
+    int i;
+    for(i=0; i<obj->messages_len; i++)
+        message_destroy(obj->messages[i]);
+
     obj->messages_len = 0;
-    obj->messages_cap = 0;
 }
 
 int
-game_object_recv_mes(game_object_t *obj, message_t mes)
+game_object_recv_mes(game_object_t *obj, message_t *mes)
 {
     if(obj->recv_callback)
         return (obj->recv_callback)(obj, mes);
