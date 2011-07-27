@@ -35,11 +35,21 @@ typedef struct game_object game_object_t;
 typedef struct update_callback update_callback_t;
 typedef struct render_callback render_callback_t;
 typedef struct message message_t;
+typedef struct aatree_node aatree_node_t;
 
 //typedef void (*message_callback_func)(game_object_t *sender, game_object_t *receiver, void *data);
 typedef void (*game_object_update_fn)(engine_t *engine, game_object_t *obj, unsigned int ticks);
 typedef void (*game_object_render_fn)(engine_t *engine, game_object_t *obj, float interpolation);
 typedef int  (*recv_callback_fn)(game_object_t *obj, message_t *mes);
+
+struct aatree_node
+{
+    aatree_node_t  *left, *right, *parent;
+    int             level;
+    unsigned long   hash;
+    void           *data;
+    int             owns_data;
+};
 
 struct message
 {
@@ -323,5 +333,12 @@ unsigned long random_ul();
 void          random_init();
 float         random_float();
 int           random_int_min_max(int min, int max);
+
+/* aatree */
+aatree_node_t *aatree_first(aatree_node_t *root);
+aatree_node_t *aatree_next(aatree_node_t *n);
+aatree_node_t *aatree_find(aatree_node_t *root, unsigned long hash);
+aatree_node_t *aatree_insert(aatree_node_t *T, aatree_node_t *n);
+aatree_node_t *aatree_delete(aatree_node_t *T, aatree_node_t *n);
 
 #endif  /* __LAPIS_H__ */
