@@ -2,9 +2,7 @@
 
 static unsigned long global_id_counter = 0;
 
-static game_object_t **objects = NULL;
-static size_t objects_len = 0;
-static size_t objects_cap = 0;
+static aatree_node_t *object_root = NULL;
 
 game_object_t *
 game_object_create(char *name, void *data)
@@ -24,31 +22,10 @@ game_object_create(char *name, void *data)
     obj->messages_cap = 0;
 
     /* cache object */
-    objects = memory_grow_to_size(objects,
-                                  sizeof(*objects),
-                                  &objects_cap,
-                                  objects_len + 1);
-    objects[objects_len] = obj;
-    objects_len++;
+    aatree_node_t *obj_node = aatree_create(lapis_hash(name), obj, 0);
+    object_root = aatree_insert(object_root, obj_node);
 
     return obj;
-}
-
-static game_object_t *
-remove_obj_by_id(int id)
-{
-    int i;
-    for(i=0; i<objects_len; i++)
-    {
-        if(objects[i] && (objects[i]->id == id))
-        {
-            game_object_t *obj = objects[i];
-            objects[i] = NULL;
-            return obj;
-        }
-    }
-
-    return NULL;
 }
 
 void
@@ -68,44 +45,26 @@ game_object_destroy(engine_t *eng, game_object_t *go)
     if(go->update_callback.type == SCRIPT_FUNC)
         free(go->update_callback.cb.script_func);
     
-    remove_obj_by_id(go->id);
     free(go);
-}
-
-game_object_t *
-game_object_get(int id)
-{
-    int i;
-    for(i=0; i<objects_len; i++)
-        if(objects[i] && (objects[i]->id == id))
-            return objects[i];
-
-    return NULL;
 }
 
 game_object_t *
 game_object_get_by_name(char *name)
 {
     unsigned int hash = lapis_hash(name);
-
-    int i;
-    for(i=0; i<objects_len; i++)
-        if(objects[i] && (objects[i]->name == hash))
-            return objects[i];
-
-    return NULL;
+    aatree_node_t *n = aatree_find(object_root, hash);
+    if(!n) return NULL;
+    return n->data;
+        
 }
 
 game_object_t *
-game_object_remove(game_object_t *obj)
+game_object_remove_by_name(char *name)
 {
-    return remove_obj_by_id(obj->id);
-}
-
-game_object_t *
-game_object_remove_by_id(int id)
-{
-    return remove_obj_by_id(id);
+    aatree_node_t *n = aatree_find(object_root, lapis_hash(name));
+    if(!n) return NULL;
+    object_root = aatree_delete(object_root, n);    
+    return n->data;
 }
 
 void

@@ -43,6 +43,22 @@ message_create(game_object_t *sender,
     return mes;
 }
 
+message_t *
+message_create_and_send(char *sender,
+                        char *receiver, 
+                        char *type,
+                        void *data,
+                        char own_data,
+                        int delivery_type)
+{
+    game_object_t *sobj = sender ? game_object_get_by_name(sender) : NULL;
+    game_object_t *robj = receiver ? game_object_get_by_name(receiver) : NULL;
+    message_t *mes = message_create(sobj, robj, type, data, own_data);
+    message_deliver(mes, delivery_type);
+    return mes;
+}
+
+
 /*
 message_t
 message_construct(game_object_t *sender,

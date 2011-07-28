@@ -146,7 +146,7 @@ struct engine
 
 struct sdl_graphics_context
 {
-    SDL_Surface* screen;
+    int flags_for_setvideomode;
 };
 
 /* sdl_graphics_context */
@@ -155,7 +155,9 @@ unsigned int lsdl_get_tick();
 void lsdl_set_video_mode(sdl_graphics_context_t* gc,
                          unsigned int screen_width,
                          unsigned int screen_height,
-                         unsigned char fullscreen);
+                         unsigned char fullscreen,
+                         unsigned char resizable);
+void lsdl_resize_internal(int w, int h);
 void lsdl_fill_rect(engine_t *manager, float x, float y, 
                     float w, float h, 
                     float red, float green, float blue);
@@ -220,10 +222,8 @@ void sound_loader_cleanup();
 
 game_object_t     *game_object_create(char *name, void *data);
 void               game_object_destroy(engine_t *eng, game_object_t *go);
-game_object_t     *game_object_get(int id);
 game_object_t     *game_object_get_by_name(char *name);
-game_object_t     *game_object_remove(game_object_t *obj);
-game_object_t     *game_object_remove_by_id(int id);
+game_object_t     *game_object_remove_by_name(char *name);
 void               game_object_set_recv_callback_c_func(game_object_t *obj,
                                                         recv_callback_fn callback);
 void               game_object_set_update_callback_c_func(game_object_t *obj,
@@ -247,6 +247,14 @@ message_t * message_create(game_object_t            *sender,
                            char                     *type,
                            void                     *data,
                            char                      own_data);
+
+message_t * message_create_and_send(char *sender,
+                                    char *receiver, 
+                                    char *type,
+                                    void *data,
+                                    char  own_data,
+                                    int   delivery_type);
+
 void        message_destroy(message_t               *message);
 
 /*
@@ -340,5 +348,6 @@ aatree_node_t *aatree_next(aatree_node_t *n);
 aatree_node_t *aatree_find(aatree_node_t *root, unsigned long hash);
 aatree_node_t *aatree_insert(aatree_node_t *T, aatree_node_t *n);
 aatree_node_t *aatree_delete(aatree_node_t *T, aatree_node_t *n);
+aatree_node_t *aatree_create(unsigned long hash, void *data, char owns_data);
 
 #endif  /* __LAPIS_H__ */

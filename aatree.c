@@ -8,8 +8,8 @@ aatree_first(aatree_node_t *root)
 {
     if(!root) return NULL;       
 
-    if (!root->left) return NULL;
-    while (root->left) root = root->left;
+    if(!root->left) return NULL;
+    while(root->left) root = root->left;
     return root;
 }
 
@@ -18,14 +18,18 @@ aatree_next(aatree_node_t *n)
 {
     if(!n) return NULL;
 
-    if (n->right) {
+    if(n->right)
+    {
         n = n->right;
-        while (n->left) n = n->left;
+        while(n->left)
+            n = n->left;
     }
-    else {
+    else
+    {
         if (!n->parent) return NULL;
-
-        while (n->parent && n->parent->right == n) n = n->parent;
+        
+        while(n->parent && n->parent->right == n)
+            n = n->parent;
         n = n->parent;
     }
     return n;
@@ -243,6 +247,18 @@ aatree_delete(aatree_node_t *T, aatree_node_t *n)
         tmp = tmp->parent;
     }
 
+    return n;
+}
+
+aatree_node_t *
+aatree_create(unsigned long hash,
+              void *data,
+              char owns_data)
+{
+    aatree_node_t *n = malloc(sizeof(*n));
+    n->hash = hash;
+    n->data = data;
+    n->owns_data = owns_data;
     return n;
 }
 
