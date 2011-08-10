@@ -69,9 +69,7 @@ struct game_state
 {
     int id;
 
-    game_object_t **objects;
-    size_t objects_len;
-    size_t objects_cap;
+    aatree_node_t *objects;
 
     //game_state_update_fn update_fn;
     //game_state_event_handle_fn event_handle_fn;
@@ -223,6 +221,7 @@ void sound_loader_cleanup();
 game_object_t     *game_object_create(char *name, void *data);
 void               game_object_destroy(engine_t *eng, game_object_t *go);
 game_object_t     *game_object_get_by_name(char *name);
+game_object_t     *game_object_remove(game_object_t *go);
 game_object_t     *game_object_remove_by_name(char *name);
 void               game_object_set_recv_callback_c_func(game_object_t *obj,
                                                         recv_callback_fn callback);

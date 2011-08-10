@@ -5,8 +5,6 @@ game_state_create(int id)
 {
     game_state_t *gs = malloc(sizeof(*gs));
     gs->id = id;
-    gs->objects_len = 0;
-    gs->objects_cap = 0;
     gs->objects = NULL;
     gs->bcast_recvrs_len = 0;
     gs->bcast_recvrs_cap = 0;
@@ -27,23 +25,17 @@ void
 game_state_append_object(game_state_t *gs,
                          game_object_t *obj)
 {
-    gs->objects = memory_grow_to_size(gs->objects,
-                                      sizeof(*gs->objects),
-                                      &gs->objects_cap,
-                                      gs->objects_len + 1);
-    gs->objects[gs->objects_len] = obj;
-    gs->objects_len++;
+    aatree_node_t *obj_node = aatree_create(obj->name, obj, 0);
+    gs->objects = aatree_insert(gs->objects, obj_node);
 }
 
 game_object_t*
 game_state_remove_object(game_state_t *gs, game_object_t *obj)
 {
-    /* TODO: for game_state_remove_object just set the position to
-     * NULL and then check if there are enough empty objects to
-     * warrant a rebuild of the object list. Perhaps number of nulls >
-     * 1/2 the objects_len. */    
-
-    return NULL;
+    aatree_node_t *n = aatree_find(gs->objects, obj->name);
+    if(!n) return NULL;
+    gs->objects = aatree_delete(gs->objects, n);
+    return n->data;
 }
 
 void
@@ -55,10 +47,10 @@ game_state_render(engine_t *eng, float interpolation)
 
     lsdl_prepare_render();
 
-    int i;
-    for(i=0; i<gs->objects_len; i++)
+    aatree_node_t *n = aatree_first(gs->objects);
+    for(; n; n = aatree_next(n))
     {
-        game_object_t *object = gs->objects[i];
+        game_object_t *object = n->data;
         if(object)
         {
             switch(object->render_callback.type)
@@ -85,10 +77,10 @@ game_state_update(engine_t *eng, unsigned int ticks)
 {
     game_state_t *gs = eng->state;
 
-    int i;
-    for(i=0; i<gs->objects_len; i++)
+    aatree_node_t *n = aatree_first(gs->objects);
+    for(; n; n = aatree_next(n))
     {
-        game_object_t *object = gs->objects[i];
+        game_object_t *object = n->data;
         if(object)
         {
             game_object_process_messages(object);
