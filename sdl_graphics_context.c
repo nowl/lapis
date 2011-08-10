@@ -81,11 +81,11 @@ lsdl_fill_rect(engine_t *engine, float x, float y, float w, float h, float red, 
 }
 
 void
-lsdl_draw_image(engine_t *engine, GLuint texture, float x, float y, float w, float h, float brightness)
+lsdl_draw_image(engine_t *engine, GLuint texture, float x, float y, float w, float h, float r, float g, float b)
 {
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    glColor3f(brightness, brightness, brightness);
+    glColor3f(r, g, b);
 
     glBegin(GL_QUADS);
     glTexCoord2f(0, 0);

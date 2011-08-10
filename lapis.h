@@ -75,6 +75,8 @@ struct game_state
     //game_state_event_handle_fn event_handle_fn;
     //game_state_render_fn render_fn;
     
+    /* TODO: make bcast_recvrs a list */
+
     bcast_recvr_t *bcast_recvrs;
     size_t bcast_recvrs_len;
     size_t bcast_recvrs_cap;
@@ -161,7 +163,7 @@ void lsdl_fill_rect(engine_t *manager, float x, float y,
                     float red, float green, float blue);
 void lsdl_draw_image(engine_t *manager, GLuint texture,
                      float x, float y, float w, float h,
-                     float brightness);
+                     float r, float g, float b);
 void lsdl_flip(engine_t * manager);
 void lsdl_prepare_render();
 

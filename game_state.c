@@ -17,7 +17,6 @@ void
 game_state_destroy(game_state_t *state)
 {
     if(state->bcast_recvrs) free(state->bcast_recvrs);
-    if(state->objects) free(state->objects);
     free(state);
 }
 
@@ -36,6 +35,8 @@ game_state_remove_object(game_state_t *gs, game_object_t *obj)
     if(!n) return NULL;
     gs->objects = aatree_delete(gs->objects, n);
     return n->data;
+
+    /* TODO: remove object from bcast recvrs also */
 }
 
 void
