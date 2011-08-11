@@ -36,11 +36,18 @@ typedef struct update_callback update_callback_t;
 typedef struct render_callback render_callback_t;
 typedef struct message message_t;
 typedef struct aatree_node aatree_node_t;
+typedef struct list list_t;
 
 //typedef void (*message_callback_func)(game_object_t *sender, game_object_t *receiver, void *data);
 typedef void (*game_object_update_fn)(engine_t *engine, game_object_t *obj, unsigned int ticks);
 typedef void (*game_object_render_fn)(engine_t *engine, game_object_t *obj, float interpolation);
 typedef int  (*recv_callback_fn)(game_object_t *obj, message_t *mes);
+
+struct list
+{
+    list_t *next, *prev;
+    void *data;
+};
 
 struct aatree_node
 {
@@ -75,11 +82,7 @@ struct game_state
     //game_state_event_handle_fn event_handle_fn;
     //game_state_render_fn render_fn;
     
-    /* TODO: make bcast_recvrs a list */
-
-    bcast_recvr_t *bcast_recvrs;
-    size_t bcast_recvrs_len;
-    size_t bcast_recvrs_cap;
+    list_t *bcast_recvrs;
 };
 
 enum callback_types
@@ -350,5 +353,12 @@ aatree_node_t *aatree_find(aatree_node_t *root, unsigned long hash);
 aatree_node_t *aatree_insert(aatree_node_t *T, aatree_node_t *n);
 aatree_node_t *aatree_delete(aatree_node_t *T, aatree_node_t *n);
 aatree_node_t *aatree_create(unsigned long hash, void *data, char owns_data);
+
+/* list */
+list_t *list_create(void *data);
+void    list_destroy(list_t *n);
+list_t *list_append(list_t* list, list_t *entry);
+list_t *list_remove(list_t* entry);
+list_t *list_first(list_t* list);
 
 #endif  /* __LAPIS_H__ */

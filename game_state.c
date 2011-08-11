@@ -6,8 +6,6 @@ game_state_create(int id)
     game_state_t *gs = malloc(sizeof(*gs));
     gs->id = id;
     gs->objects = NULL;
-    gs->bcast_recvrs_len = 0;
-    gs->bcast_recvrs_cap = 0;
     gs->bcast_recvrs = NULL;
                                       
     return gs;
@@ -16,7 +14,6 @@ game_state_create(int id)
 void
 game_state_destroy(game_state_t *state)
 {
-    if(state->bcast_recvrs) free(state->bcast_recvrs);
     free(state);
 }
 
@@ -34,9 +31,25 @@ game_state_remove_object(game_state_t *gs, game_object_t *obj)
     aatree_node_t *n = aatree_find(gs->objects, obj->name);
     if(!n) return NULL;
     gs->objects = aatree_delete(gs->objects, n);
-    return n->data;
 
-    /* TODO: remove object from bcast recvrs also */
+    /* remove object from bcast recvrs also */
+    list_t *a = list_first(gs->bcast_recvrs);
+    while(a)
+    {
+        list_t *t = a->next;
+        
+        bcast_recvr_t *br = a->data;
+        if(br->obj == obj)
+        {
+            free(br);
+            gs->bcast_recvrs = list_remove(a);
+            list_destroy(a);
+        }
+        
+        a = t;
+    }
+
+    return n->data;
 }
 
 void
@@ -106,13 +119,11 @@ game_state_update(engine_t *eng, unsigned int ticks)
 void
 game_state_append_bcast_recvr(game_state_t *state, game_object_t *obj, char *name)
 {
-    state->bcast_recvrs = memory_grow_to_size(state->bcast_recvrs,
-                                              sizeof(*state->bcast_recvrs),
-                                              &state->bcast_recvrs_cap,
-                                              state->bcast_recvrs_len + 1);
-    state->bcast_recvrs[state->bcast_recvrs_len].obj = obj;
-    state->bcast_recvrs[state->bcast_recvrs_len].hash = lapis_hash(name);
-    state->bcast_recvrs_len++;
+    bcast_recvr_t *br = malloc(sizeof(*br));
+    br->obj = obj;
+    br->hash = lapis_hash(name);
+    list_t *le = list_create(br);
+    state->bcast_recvrs = list_append(state->bcast_recvrs, le);
 }
 
 void
@@ -126,10 +137,10 @@ game_state_deliver_message_sync(game_state_t *state, message_t *message)
          * type */
         unsigned long type = message->type;
 
-        int i;
-        for(i=0; i<state->bcast_recvrs_len; i++)
+        list_t *a;
+        for(a = list_first(state->bcast_recvrs); a; a = a->next)
         {
-            bcast_recvr_t *bcast_recv = &state->bcast_recvrs[i];
+            bcast_recvr_t *bcast_recv = a->data;
             if(bcast_recv->hash == type)
             {
                 /* this object is listening for these */
@@ -152,10 +163,10 @@ game_state_deliver_message_async(game_state_t *state, message_t *message)
          * type */
         unsigned long type = message->type;
 
-        int i;
-        for(i=0; i<state->bcast_recvrs_len; i++)
+        list_t *a;
+        for(a = list_first(state->bcast_recvrs); a; a = a->next)
         {
-            bcast_recvr_t *bcast_recv = &state->bcast_recvrs[i];
+            bcast_recvr_t *bcast_recv = a->data;
             if(bcast_recv->hash == type)
             {
                 /* this object is listening for these */

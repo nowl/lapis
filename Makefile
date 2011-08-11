@@ -20,7 +20,8 @@ SRCS = \
 	collide.c \
 	astar.c \
 	random.c \
-	aatree.c
+	aatree.c \
+	list.c
 
 OBJS = $(SRCS:.c=.o)
 
