@@ -5,6 +5,7 @@ game_state_create(int id)
 {
     game_state_t *gs = malloc(sizeof(*gs));
     gs->id = id;
+    gs->num_render_levels = 1;
     gs->objects = NULL;
     gs->bcast_recvrs = NULL;
                                       
@@ -61,24 +62,28 @@ game_state_render(engine_t *eng, float interpolation)
 
     lsdl_prepare_render();
 
-    aatree_node_t *n = aatree_first(gs->objects);
-    for(; n; n = aatree_next(n))
+    int rl;                     /* render level */
+    for(rl=0; rl<gs->num_render_levels; rl++)
     {
-        game_object_t *object = n->data;
-        if(object)
+        aatree_node_t *n = aatree_first(gs->objects);
+        for(; n; n = aatree_next(n))
         {
-            switch(object->render_callback.type)
+            game_object_t *object = n->data;
+            if(object && object->render_level == rl)
             {
-            case C_FUNC:
-                object->render_callback.cb.c_func(eng, object, interpolation);
-                break;
-            case SCRIPT_FUNC:
-                //eng->script_render_call(object->render_callback.cb.script_func, eng, object, interpolation);
-                break;
-            case NONE:
-                break;
-            default:
-                assert(FALSE);
+                switch(object->render_callback.type)
+                {
+                case C_FUNC:
+                    object->render_callback.cb.c_func(eng, object, interpolation);
+                    break;
+                case SCRIPT_FUNC:
+                    //eng->script_render_call(object->render_callback.cb.script_func, eng, object, interpolation);
+                    break;
+                case NONE:
+                    break;
+                default:
+                    assert(FALSE);
+                }
             }
         }
     }

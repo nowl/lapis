@@ -10,6 +10,7 @@ game_object_create(char *name, void *data)
     game_object_t *obj = malloc(sizeof(*obj));
     obj->id = global_id_counter++;
     obj->name = lapis_hash(name);
+    obj->render_level = 0;
     obj->data = data;
 	obj->image = NULL;
 	obj->screenx = 0;

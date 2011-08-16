@@ -74,15 +74,10 @@ struct bcast_recvr
 
 struct game_state
 {
-    int id;
-
+    int            id;
     aatree_node_t *objects;
-
-    //game_state_update_fn update_fn;
-    //game_state_event_handle_fn event_handle_fn;
-    //game_state_render_fn render_fn;
-    
-    list_t *bcast_recvrs;
+    list_t        *bcast_recvrs;
+    int            num_render_levels;
 };
 
 enum callback_types
@@ -115,6 +110,8 @@ struct game_object
     unsigned long id;
     unsigned long name;
     unsigned int type;
+    
+    int render_level;
     void *data;
 	SDL_Surface *image;
 	int screenx;
