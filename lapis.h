@@ -332,7 +332,8 @@ void astar_destroy();
 /* It is the user's responsibility to free the pointer returned by
  * this function when finished with it. */
 void astar_best_path(struct astar_pos_t begin,
-					 struct astar_pos_t end);
+					 struct astar_pos_t end,
+                     int bailout_tries);
 astar_pos_vector_t astar_retrieve_path();
 int astar_retrieve_path_length();
 

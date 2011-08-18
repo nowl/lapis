@@ -142,7 +142,8 @@ get_heuristic_cost(unsigned int start_x,
 
 void
 astar_best_path(struct astar_pos_t begin,
-				struct astar_pos_t end)
+				struct astar_pos_t end,
+                int bailout_tries)
 {
 	reset_vectors();
 	
@@ -151,8 +152,16 @@ astar_best_path(struct astar_pos_t begin,
 	
 	add_to_open(begin_pos);
 
+    int loop_counter = 0;
+
 	for(;;)
 	{
+        if(loop_counter++ == bailout_tries)
+        {
+            reset_vectors();
+            return;
+        }
+
 		/* find lowest f in open */
 		int next_open = find_lowest_f_in_open();		
 
