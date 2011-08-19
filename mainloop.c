@@ -52,7 +52,7 @@ mainloop(engine_t* eng)
             eng->fps = fps_counter;
 			fps_counter = 0;
 			fps_start_time = lsdl_get_tick();
-            //LOG("fps = %d\n", eng->fps);
+            LOG("fps = %d\n", eng->fps);
 		}
     }
 }

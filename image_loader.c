@@ -15,7 +15,7 @@ static size_t cache_len = 0;
 static size_t cache_cap = 0;
 
 
-static GLuint
+GLuint
 opengl_texture_from_surface(SDL_Surface *image)
 {
     GLuint texture;
@@ -23,11 +23,9 @@ opengl_texture_from_surface(SDL_Surface *image)
     GLint  nOfColors;
     
     // Check that the image's width is a power of 2
-    if ( (image->w & (image->w - 1)) != 0 )
-        WARN("warning: texture: width is not a power of 2\n");
+    //if ( (image->w & (image->w - 1)) != 0 ) WARN("warning: texture: width is not a power of 2\n");
     // Also check if the height is a power of 2
-    if ( (image->h & (image->h - 1)) != 0 )
-        WARN("warning: texture: height is not a power of 2\n");
+    //if ( (image->h & (image->h - 1)) != 0 ) WARN("warning: texture: height is not a power of 2\n");
     // get the number of channels in the SDL image
     nOfColors = image->format->BytesPerPixel;
     if (nOfColors == 4)     // contains an alpha channel
@@ -43,7 +41,7 @@ opengl_texture_from_surface(SDL_Surface *image)
         else
             texture_format = GL_BGR;
     } else {
-        WARN("warning: the image is not truecolor..  this will probably break\n");
+        WARN("warning: the image is not truecolor..  this will probably break (%d)\n", nOfColors);
         return -1;
     }
 

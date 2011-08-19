@@ -102,6 +102,54 @@ lsdl_draw_image(engine_t *engine, GLuint texture, float x, float y, float w, flo
 }
 
 void
+lsdl_draw_text(engine_t *engine,
+               char *font_name, int pt_size,
+               char *text, int r, int g, int b,
+               int x, int y)
+{
+    SDL_Surface *surf = sdl_font_get_surf(font_name, pt_size, text, r, g, b);
+
+    SDL_Surface *corrected_surf = SDL_CreateRGBSurface(0, surf->w, surf->h,
+                                                       32,
+                                                       surf->format->Rmask,
+                                                       surf->format->Gmask,
+                                                       surf->format->Bmask,
+                                                       surf->format->Amask);
+    /* ignore alpha info */
+    SDL_SetAlpha(corrected_surf, 0, 0);
+    /* XXX: set color key to 0 to mask out the transparent parts*/
+    SDL_SetColorKey(corrected_surf, SDL_SRCCOLORKEY, 0);
+
+    if(!corrected_surf)
+    {
+        WARN("SDL_CreateRGBSurface fail\n");
+        return;
+    }
+
+    //SDL_Rect source_rect = {0, 0, surf->w, surf->h};
+    int res = SDL_BlitSurface(surf, NULL, corrected_surf, NULL);
+    if(res != 0)
+    {
+        SDL_FreeSurface(corrected_surf);
+        WARN("SDL_BlitSurface fail: %s\n", SDL_GetError());
+        return;
+    }
+
+    GLuint texture = opengl_texture_from_surface(corrected_surf);
+
+    SDL_FreeSurface(corrected_surf);
+
+    lsdl_draw_image(engine, texture,
+                    x,
+                    y,
+                    surf->w,
+                    surf->h,
+                    1.0, 1.0, 1.0);
+
+    glDeleteTextures( 1, &texture);
+}
+
+void
 lsdl_prepare_render()
 {
     /* Clear the color and depth buffers. */

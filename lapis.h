@@ -164,6 +164,10 @@ void lsdl_fill_rect(engine_t *manager, float x, float y,
 void lsdl_draw_image(engine_t *manager, GLuint texture,
                      float x, float y, float w, float h,
                      float r, float g, float b);
+void lsdl_draw_text(engine_t *engine,
+                    char *font_name, int pt_size,
+                    char *text, int r, int g, int b,
+                    int x, int y);
 void lsdl_flip(engine_t * manager);
 void lsdl_prepare_render();
 
@@ -294,6 +298,7 @@ image_loader_load(char *alias,
 
 GLuint     image_loader_get(char *alias);
 void       image_loader_cleanup();
+GLuint     opengl_texture_from_surface(SDL_Surface *image); /* helper function */
 
 /* image_render_set */
 
