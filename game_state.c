@@ -31,7 +31,9 @@ game_state_remove_object(game_state_t *gs, game_object_t *obj)
 {
     aatree_node_t *n = aatree_find(gs->objects, obj->name);
     if(!n) return NULL;
+
     gs->objects = aatree_delete(gs->objects, n);
+    game_object_t *go = n->data;
 
     /* remove object from bcast recvrs also */
     list_t *a = list_first(gs->bcast_recvrs);
@@ -50,7 +52,7 @@ game_state_remove_object(game_state_t *gs, game_object_t *obj)
         a = t;
     }
 
-    return n->data;
+    return go;
 }
 
 void

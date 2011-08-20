@@ -188,12 +188,15 @@ aatree_delete(aatree_node_t *T, aatree_node_t *n)
         /* this is a leaf node */
         tmp = n->parent;
 
-        if(n->parent)
+        aatree_node_t *p = n->parent;
+        free(n);
+
+        if(p)
         {
-            if(n->parent->left == n)
-                n->parent->left = NULL;
+            if(p->left == n)
+                p->left = NULL;
             else
-                n->parent->right = NULL;
+                p->right = NULL;
         }
         else
             return NULL;
@@ -214,6 +217,8 @@ aatree_delete(aatree_node_t *T, aatree_node_t *n)
         tmp = L->parent;
         n->hash = L->hash;
         n->data = L->data;
+        
+        if(!L->right && !L->left) free(L);
     }
     else
     {
@@ -231,6 +236,8 @@ aatree_delete(aatree_node_t *T, aatree_node_t *n)
         tmp = L->parent;
         n->hash = L->hash;
         n->data = L->data;
+
+        if(!L->right && !L->left) free(L);
     }
    
     /* rebalance */

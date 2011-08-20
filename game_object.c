@@ -65,7 +65,7 @@ game_object_remove(game_object_t *go)
     aatree_node_t *n = aatree_find(object_root, go->name);
     if(!n) return NULL;
     object_root = aatree_delete(object_root, n);
-    return n->data;
+    return go;
 }
 
 game_object_t *
