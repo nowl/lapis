@@ -44,6 +44,15 @@ message_create(game_object_t *sender,
 }
 
 message_t *
+message_copy(message_t *mes)
+{
+    message_t *m = malloc(sizeof(*m));
+    memcpy(m, mes, sizeof(*m));
+    m->own_data = 0;
+    return m;
+}
+
+void
 message_create_and_send(char *sender,
                         char *receiver, 
                         char *type,
@@ -55,7 +64,8 @@ message_create_and_send(char *sender,
     game_object_t *robj = receiver ? game_object_get_by_name(receiver) : NULL;
     message_t *mes = message_create(sobj, robj, type, data, own_data);
     message_deliver(mes, delivery_type);
-    return mes;
+    if(delivery_type == SYNC)
+        free(mes);
 }
 
 

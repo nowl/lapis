@@ -253,7 +253,9 @@ message_t * message_create(game_object_t            *sender,
                            void                     *data,
                            char                      own_data);
 
-message_t * message_create_and_send(char *sender,
+message_t * message_copy(message_t *mes);
+
+void        message_create_and_send(char *sender,
                                     char *receiver, 
                                     char *type,
                                     void *data,

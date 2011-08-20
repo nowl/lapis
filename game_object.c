@@ -125,7 +125,7 @@ game_object_append_message(game_object_t *obj,
                             sizeof(*obj->messages),
                             &obj->messages_cap,
                             obj->messages_len + 1);
-    obj->messages[obj->messages_len] = mes;
+    obj->messages[obj->messages_len] = message_copy(mes);
     obj->messages_len++;
 }
 

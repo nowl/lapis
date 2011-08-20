@@ -35,7 +35,7 @@ engine_handle_events(engine_t *eng)
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
-         message_t *message = message_create(NULL, NULL, "sdl-event", &event, 0);
+        message_t *message = message_create(NULL, NULL, "sdl-event", &event, 0);
         message_deliver(message, ASYNC);
     }
 }
