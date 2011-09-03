@@ -38,7 +38,6 @@ typedef struct message message_t;
 typedef struct aatree_node aatree_node_t;
 typedef struct list list_t;
 typedef struct ref ref_t;
-typedef struct lapis_lua lapis_lua_t;
 
 //typedef void (*message_callback_func)(game_object_t *sender, game_object_t *receiver, void *data);
 typedef void (*game_object_update_fn)(engine_t *engine, game_object_t *obj, unsigned int ticks);
@@ -63,7 +62,7 @@ struct aatree_node
     int             level;
     unsigned long   hash;
     void           *data;
-    int             owns_data;
+    char            owns_data;
 };
 
 struct message
@@ -159,8 +158,7 @@ struct sdl_graphics_context
 /* sdl_graphics_context */
 
 unsigned int lsdl_get_tick();
-void lsdl_set_video_mode(sdl_graphics_context_t* gc,
-                         unsigned int screen_width,
+void lsdl_set_video_mode(unsigned int screen_width,
                          unsigned int screen_height,
                          unsigned char fullscreen,
                          unsigned char resizable);
@@ -380,11 +378,6 @@ list_t *list_first(list_t* list);
 ref_t *ref_create(void * data);
 void   ref_inc(ref_t *ref);
 void   ref_dec(ref_t *ref);
-
-/* lua scripting */
-lapis_lua_t *lua_scripting_init();
-void lua_scripting_destroy(lapis_lua_t *ll);
-int lua_scripting_run_file(lapis_lua_t *ll, char *filename);
 
 /* los */
 

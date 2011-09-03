@@ -1,5 +1,94 @@
 #include "lapis.h"
 
+struct event_data
+{
+    enum {
+        KEY,
+        MOUSE_BUTTON,
+        MOUSE_MOTION,
+        RESIZE,
+        QUIT
+    } type;
+    
+    union {
+        struct {
+            enum {
+                UP,
+                DOWN
+            } type;
+            int mod;
+            int key;
+        } key;
+        struct {
+            int width;
+            int height;
+        } resize;
+        struct {
+            int x;
+            int y;
+        } mouse_motion;
+        struct {
+            int type;
+            int x;
+            int y;
+            int button;
+        } mouse_button;
+    } data;
+};
+
+int lsdl_poll_event(struct event_data *event)
+{
+    SDL_Event e;
+    int result = SDL_PollEvent(&e);
+
+    if(!result) return 0;
+    
+    switch(e.type)
+    {
+    case SDL_KEYDOWN:
+        event->type = KEY;
+        event->data.key.type = DOWN;
+        event->data.key.mod = e.key.keysym.mod;
+        event->data.key.key = e.key.keysym.sym;
+        break;
+    case SDL_KEYUP:
+        event->type = KEY;
+        event->data.key.type = UP;
+        event->data.key.mod = e.key.keysym.mod;
+        event->data.key.key = e.key.keysym.sym;
+        break;
+    case SDL_VIDEORESIZE:
+        event->type = RESIZE;
+        event->data.resize.width = e.resize.w;
+        event->data.resize.height = e.resize.h;
+        break;
+    case SDL_MOUSEMOTION:
+        event->type = MOUSE_MOTION;
+        event->data.mouse_motion.x = e.motion.x;
+        event->data.mouse_motion.y = e.motion.y;
+        break;
+    case SDL_MOUSEBUTTONDOWN:
+        event->type = MOUSE_BUTTON;
+        event->data.mouse_button.type = DOWN;
+        event->data.mouse_button.x = e.button.x;
+        event->data.mouse_button.y = e.button.y;
+        event->data.mouse_button.button = e.button.button;
+        break;
+    case SDL_MOUSEBUTTONUP:
+        event->type = MOUSE_BUTTON;
+        event->data.mouse_button.type = UP;
+        event->data.mouse_button.x = e.button.x;
+        event->data.mouse_button.y = e.button.y;
+        event->data.mouse_button.button = e.button.button;
+        break;
+    case SDL_QUIT:
+        event->type = QUIT;
+        break;
+    }
+
+    return 1;
+}
+
 unsigned int
 lsdl_get_tick()
 {
@@ -7,9 +96,9 @@ lsdl_get_tick()
 }
 
 static void
-setup_screen_params(sdl_graphics_context_t *gc, int w, int h)
+setup_screen_params(int flags, int w, int h)
 {
-    SDL_Surface *screen = SDL_SetVideoMode(w, h, 16, gc->flags_for_setvideomode);
+    SDL_Surface *screen = SDL_SetVideoMode(w, h, 16, flags);
     if ( !screen )
     {
         LOG("Unable to set video mode: %s\n", SDL_GetError());
@@ -33,8 +122,7 @@ setup_screen_params(sdl_graphics_context_t *gc, int w, int h)
 }
 
 void
-lsdl_set_video_mode(sdl_graphics_context_t* gc,
-                    unsigned int screen_width,
+lsdl_set_video_mode(unsigned int screen_width,
                     unsigned int screen_height,
                     unsigned char fullscreen,
                     unsigned char resizable)
@@ -50,21 +138,10 @@ lsdl_set_video_mode(sdl_graphics_context_t* gc,
     if(resizable)
         flags |= SDL_RESIZABLE;
 
-    gc->flags_for_setvideomode = flags;
-    
-    setup_screen_params(gc, screen_width, screen_height);
+    setup_screen_params(flags, screen_width, screen_height);
 
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);  
-}
-
-void
-lsdl_resize_internal(int w, int h)
-{
-    sdl_graphics_context_t *gc = lapis_get_engine()->sdl_driver;
-    
-    /* SDL hack? to reset the window size have to do SDL_SetVideoMode again? */
-    setup_screen_params(gc, w, h);
 }
 
 void
@@ -79,6 +156,8 @@ lsdl_fill_rect(engine_t *engine, float x, float y, float w, float h, float red, 
     glVertex2f(x, y+h);
     glEnd();
 }
+
+#if 0
 
 void
 lsdl_draw_image(engine_t *engine, GLuint texture, float x, float y, float w, float h, float r, float g, float b)
@@ -149,6 +228,8 @@ lsdl_draw_text(engine_t *engine,
     glDeleteTextures( 1, &texture);
 }
 
+#endif
+
 void
 lsdl_prepare_render()
 {
@@ -165,3 +246,4 @@ lsdl_flip(engine_t * engine)
 {
     SDL_GL_SwapBuffers();
 }
+

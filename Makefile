@@ -1,32 +1,12 @@
 CC = gcc
 CFLAGS = -Wall -g -O2 -I/usr/local/include/SDL -fPIC
-CFLAGS += -I/usr/include/lua5.1
 INCLUDES = $(shell sdl-config --cflags)
 LDFLAGS = -fPIC -shared
 LIBS =
 
 SRCS = \
-	engine.c \
-	utils.c \
 	lapis.c \
-	game_state.c \
-	sdl_graphics_context.c \
-	sdl_font.c \
-	sdl_sound.c \
-	game_object.c \
-	message.c \
-	mainloop.c \
-	image_loader.c \
-	image_render_set.c \
-	collide.c \
-	astar.c \
-	random.c \
-	aatree.c \
-	list.c \
-	ref.c \
-	lapis_wrap.c \
-	lua.c \
-	shadow_los.c
+	sdl_graphics_context.c
 
 OBJS = $(SRCS:.c=.o)
 
