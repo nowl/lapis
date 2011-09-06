@@ -52,7 +52,7 @@ game_object_destroy(engine_t *eng, game_object_t *go)
 game_object_t *
 game_object_get_by_name(char *name)
 {
-    unsigned int hash = lapis_hash(name);
+    unsigned long hash = lapis_hash(name);
     aatree_node_t *n = aatree_find(object_root, hash);
     if(!n) return NULL;
     return n->data;

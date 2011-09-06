@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -g -O2
+CFLAGS = -Wall -g -O2 -I/usr/local/include/SDL -fPIC
 INCLUDES = $(shell sdl-config --cflags)
 LDFLAGS = -fPIC -shared
 LIBS =
@@ -21,7 +21,8 @@ SRCS = \
 	astar.c \
 	random.c \
 	aatree.c \
-	list.c
+	list.c \
+	ref.c
 
 OBJS = $(SRCS:.c=.o)
 

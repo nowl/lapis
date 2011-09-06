@@ -8,7 +8,7 @@ aatree_first(aatree_node_t *root)
 {
     if(!root) return NULL;       
 
-    if(!root->left) return NULL;
+    //if(!root->left) return NULL;
     while(root->left) root = root->left;
     return root;
 }

@@ -37,11 +37,18 @@ typedef struct render_callback render_callback_t;
 typedef struct message message_t;
 typedef struct aatree_node aatree_node_t;
 typedef struct list list_t;
+typedef struct ref ref_t;
 
 //typedef void (*message_callback_func)(game_object_t *sender, game_object_t *receiver, void *data);
 typedef void (*game_object_update_fn)(engine_t *engine, game_object_t *obj, unsigned int ticks);
 typedef void (*game_object_render_fn)(engine_t *engine, game_object_t *obj, float interpolation);
 typedef int  (*recv_callback_fn)(game_object_t *obj, message_t *mes);
+
+struct ref
+{
+    int count;
+    void *data;
+};
 
 struct list
 {
@@ -62,8 +69,7 @@ struct message
 {
     game_object_t *sender, *receiver;
     unsigned long type;
-    void *data;
-    char own_data;
+    ref_t *data;
 };
 
 struct bcast_recvr
@@ -250,17 +256,15 @@ void               game_object_process_messages(game_object_t *obj);
 message_t * message_create(game_object_t            *sender,
                            game_object_t            *receiver,
                            char                     *type,
-                           void                     *data,
-                           char                      own_data);
+                           ref_t                    *data);
 
 message_t * message_copy(message_t *mes);
 
-void        message_create_and_send(char *sender,
-                                    char *receiver, 
-                                    char *type,
-                                    void *data,
-                                    char  own_data,
-                                    int   delivery_type);
+void        message_create_and_send(char  *sender,
+                                    char  *receiver, 
+                                    char  *type,
+                                    ref_t *data,
+                                    int    delivery_type);
 
 void        message_destroy(message_t               *message);
 
@@ -365,5 +369,10 @@ void    list_destroy(list_t *n);
 list_t *list_append(list_t* list, list_t *entry);
 list_t *list_remove(list_t* entry);
 list_t *list_first(list_t* list);
+
+/* ref */
+ref_t *ref_create(void * data);
+void   ref_inc(ref_t *ref);
+void   ref_dec(ref_t *ref);
 
 #endif  /* __LAPIS_H__ */

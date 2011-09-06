@@ -31,15 +31,15 @@ message_t *
 message_create(game_object_t *sender,
                game_object_t *receiver, 
                char *type,
-               void *data,
-               char own_data)
+               ref_t *data)
 {
     message_t *mes = malloc(sizeof(*mes));
     mes->sender = sender;
     mes->receiver = receiver;
     mes->type = lapis_hash(type);
     mes->data = data;
-    mes->own_data = own_data;
+    if(data)
+        ref_inc(data);
     return mes;
 }
 
@@ -48,50 +48,31 @@ message_copy(message_t *mes)
 {
     message_t *m = malloc(sizeof(*m));
     memcpy(m, mes, sizeof(*m));
-    m->own_data = 0;
+    if(mes->data)
+        ref_inc(mes->data);
     return m;
 }
 
 void
-message_create_and_send(char *sender,
-                        char *receiver, 
-                        char *type,
-                        void *data,
-                        char own_data,
-                        int delivery_type)
+message_create_and_send(char  *sender,
+                        char  *receiver, 
+                        char  *type,
+                        ref_t *data,
+                        int    delivery_type)
 {
     game_object_t *sobj = sender ? game_object_get_by_name(sender) : NULL;
     game_object_t *robj = receiver ? game_object_get_by_name(receiver) : NULL;
-    message_t *mes = message_create(sobj, robj, type, data, own_data);
+    message_t *mes = message_create(sobj, robj, type, data);
     message_deliver(mes, delivery_type);
     if(delivery_type == SYNC)
         free(mes);
 }
 
-
-/*
-message_t
-message_construct(game_object_t *sender,
-                  game_object_t *receiver,
-                  char *type,
-                  void *data,
-                  char own_data)
-{
-    message_t mes;
-    mes.sender = sender;
-    mes.receiver = receiver;
-    mes.type = lapis_hash(type);
-    mes.data = data;
-    mes.own_data = own_data;
-    return mes;
-}
-*/
-
 void
 message_destroy(message_t *message)
 {
-    if(message->own_data)
-        free(message->data);
+    if(message->data)
+        ref_dec(message->data);
     free(message);
 }
 

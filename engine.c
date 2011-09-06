@@ -35,8 +35,12 @@ engine_handle_events(engine_t *eng)
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
-        message_t *message = message_create(NULL, NULL, "sdl-event", &event, 0);
+        SDL_Event *eventp = malloc(sizeof(*eventp));
+        memcpy(eventp, &event, sizeof(*eventp));
+        ref_t *ref = ref_create(eventp);
+        message_t *message = message_create(NULL, NULL, "sdl-event", ref);
         message_deliver(message, ASYNC);
+        ref_dec(ref);
     }
 }
 
