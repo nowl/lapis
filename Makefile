@@ -1,5 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -g -O2 -I/usr/local/include/SDL -fPIC
+CFLAGS += -I/usr/include/lua5.1
 INCLUDES = $(shell sdl-config --cflags)
 LDFLAGS = -fPIC -shared
 LIBS =
@@ -22,26 +23,30 @@ SRCS = \
 	random.c \
 	aatree.c \
 	list.c \
-	ref.c
+	ref.c \
+	lapis_wrap.c \
+	lua.c
 
 OBJS = $(SRCS:.c=.o)
 
 MAIN = liblapis.so
 
 
-.SUFFIXES: .c .o
+.SUFFIXES: .c .o .i
 
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 .PHONY: depend clean
 
-$(MAIN): $(OBJS) 
+$(MAIN): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(MAIN) $(OBJS) $(LDFLAGS) $(LIBS)
 
+lapis_wrap.c: lapis.i
+	swig -lua lapis.i
 
 clean:
-	rm -f *.o *~ $(MAIN)
+	rm -f *.o *~ $(MAIN) lapis_wrap.c
 
 depend: $(SRCS)
 	$(CC) -M $(CFLAGS) $(INCLUDES) $^ > $@
