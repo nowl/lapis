@@ -379,6 +379,6 @@ void   ref_dec(ref_t *ref);
 /* lua scripting */
 lapis_lua_t *lua_scripting_init();
 void lua_scripting_destroy(lapis_lua_t *ll);
-void lua_scripting_run_file(lapis_lua_t *ll, char *filename);
+int lua_scripting_run_file(lapis_lua_t *ll, char *filename);
 
 #endif  /* __LAPIS_H__ */
