@@ -25,7 +25,8 @@ SRCS = \
 	list.c \
 	ref.c \
 	lapis_wrap.c \
-	lua.c
+	lua.c \
+	los.c
 
 OBJS = $(SRCS:.c=.o)
 

@@ -320,6 +320,11 @@ int collide_point_in_rect(float x, float y, SDL_Rect *rect);
 int collide_lines_intersect(float x1, float y1, float x2,
                             float y2, float x3, float y3,
                             float x4, float y4);
+int collide_line_rect(float x1, float y1, float x2, float y2,
+                      float llx, float lly,
+                      float lrx, float lry,
+                      float urx, float ury,
+                      float ulx, float uly);
 int collide_point_in_polygon(float x, float y,
                              float *polygon, int num_points);
 int collide_rect_intersect(SDL_Rect *bb1, SDL_Rect *bb2);
@@ -380,5 +385,12 @@ void   ref_dec(ref_t *ref);
 lapis_lua_t *lua_scripting_init();
 void lua_scripting_destroy(lapis_lua_t *ll);
 int lua_scripting_run_file(lapis_lua_t *ll, char *filename);
+
+/* los */
+typedef float (*opaque_f)(int x, int y);
+typedef void (*set_los_f)(int x, int y, float visibility);
+
+void los_init();
+void los_run(int origin_x, int origin_y, opaque_f opfun, set_los_f visibility);
 
 #endif  /* __LAPIS_H__ */

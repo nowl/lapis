@@ -35,6 +35,26 @@ collide_lines_intersect(float x1, float y1, float x2,
     return TRUE;
 }
 
+
+int
+collide_line_rect(float x1, float y1, float x2, float y2,
+                  float llx, float lly,
+                  float lrx, float lry,
+                  float urx, float ury,
+                  float ulx, float uly)
+{
+    if( collide_lines_intersect(x1, y1, x2, y2, llx, lly, lrx, lry) == TRUE )
+        return TRUE;
+    if( collide_lines_intersect(x1, y1, x2, y2, lrx, lry, urx, ury) == TRUE )
+        return TRUE;
+    if( collide_lines_intersect(x1, y1, x2, y2, urx, ury, ulx, uly) == TRUE )
+        return TRUE;
+    if( collide_lines_intersect(x1, y1, x2, y2, ulx, uly, llx, lly) == TRUE )
+        return TRUE;
+
+    return FALSE;
+}
+
 int
 collide_point_in_polygon(float x, float y,
                          float *polygon, int num_points)
