@@ -387,10 +387,10 @@ void lua_scripting_destroy(lapis_lua_t *ll);
 int lua_scripting_run_file(lapis_lua_t *ll, char *filename);
 
 /* los */
-typedef float (*opaque_f)(int x, int y);
-typedef void (*set_los_f)(int x, int y, float visibility);
 
-void los_init();
-void los_run(int origin_x, int origin_y, opaque_f opfun, set_los_f visibility);
+typedef int (*blocked_f)(int x, int y);
+typedef void (*set_visible_f)(int x, int y);
+
+void los_visibility(int origin_x, int origin_y, int depth, blocked_f get_blocked, set_visible_f set_vis);
 
 #endif  /* __LAPIS_H__ */

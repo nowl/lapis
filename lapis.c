@@ -6,7 +6,6 @@ int
 lapis_init()
 {
     random_init();
-    los_init();
 
     if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0 )
     {
