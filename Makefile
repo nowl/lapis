@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -g -O2 -I/usr/local/include/SDL -fPIC
+CFLAGS = -Wall -g -O2 -fPIC
 INCLUDES = $(shell sdl-config --cflags)
 LDFLAGS = -fPIC -shared
 LIBS =
@@ -23,11 +23,8 @@ MAIN = liblapis.so
 $(MAIN): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(MAIN) $(OBJS) $(LDFLAGS) $(LIBS)
 
-lapis_wrap.c: lapis.i
-	swig -lua lapis.i
-
 clean:
-	rm -f *.o *~ $(MAIN) lapis_wrap.c
+	rm -f *.o *~ $(MAIN)
 
 depend: $(SRCS)
 	$(CC) -M $(CFLAGS) $(INCLUDES) $^ > $@

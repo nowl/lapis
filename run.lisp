@@ -2,14 +2,12 @@
   (load "~/quicklisp/setup.lisp"))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (ql:quickload "cffi"))
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (asdf:oos 'asdf:load-op :lapis))
+  (require :lapis-engine))
 
 (lapis:init)
 (lapis:set-video-mode 1024 768 0 1)
 
+#|
 (defparameter *gs* (lapis::make-gamestate :objects nil))
 (lapis::set-gamestate *gs*)
 
@@ -25,3 +23,4 @@
 
 (lapis:mainloop)
 (quit)
+#|

@@ -113,6 +113,8 @@ setup_screen_params(int flags, int w, int h)
     //glFrontFace( GL_CCW );
     //glEnable( GL_CULL_FACE );
 
+    LOG("a\n");
+
     glClearColor( 0, 0, 0, 0 );
     glViewport( 0, 0, w, h );
 
@@ -126,13 +128,14 @@ lsdl_set_video_mode(unsigned int screen_width,
                     unsigned int screen_height,
                     unsigned char fullscreen,
                     unsigned char resizable)
-{
+{    
     SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
     SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
     SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-
+    
     int flags = SDL_OPENGL;
+    
     if(fullscreen)
         flags |= SDL_FULLSCREEN;
     if(resizable)
