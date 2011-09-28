@@ -1,4 +1,14 @@
-(in-package :lapis)
+(defpackage :lapis-engine-ffi
+  (:nicknames :lapis-ffi)
+  (:use #:cl #:cffi)
+  (:export #:init
+           #:set-video-mode
+           #:fill-rect
+           #:prepare-render
+           #:flip
+           #:sdl-event))
+
+(in-package :lapis-ffi)
 
 (load-foreign-library "libGL.so")
 (load-foreign-library "libGLU.so")

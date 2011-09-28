@@ -1,6 +1,8 @@
-(defpackage :lapis
+(defpackage :lapis-engine
+  (:nicknames :lapis)
   (:use #:cl 
-		#:cffi)
+		#:cffi
+        #:lapis-ffi)
   (:export #:init
            #:set-video-mode
            #:fill-rect
