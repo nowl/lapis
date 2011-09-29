@@ -51,7 +51,7 @@
         (fps-start-time (get-tick)))
 
     (loop while *mainloop-running* do
-         
+        
          (handle-events)
 
          (let ((loops 0)

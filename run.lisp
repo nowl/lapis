@@ -7,7 +7,6 @@
 (lapis:init)
 (lapis:set-video-mode 1024 768 0 1)
 
-#|
 (defparameter *gs* (lapis::make-gamestate :objects nil))
 (lapis::set-gamestate *gs*)
 
@@ -23,4 +22,3 @@
 
 (lapis:mainloop)
 (quit)
-#|

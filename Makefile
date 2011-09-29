@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -g -O2 -fPIC
+CFLAGS = -Wall -g -O2  -fPIC
 INCLUDES = $(shell sdl-config --cflags)
 LDFLAGS = -fPIC -shared
 LIBS =

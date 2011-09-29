@@ -6,7 +6,14 @@
            #:fill-rect
            #:prepare-render
            #:flip
-           #:sdl-event))
+           #:get-tick
+           #:poll-event
+           #:sdl-event
+           #:sdl-event-mouse-motionp
+           #:sdl-event-mouse-motion
+           #:sdl-event-quitp
+           #:sdl-event-keyp
+           #:sdl-event-key))
 
 (in-package :lapis-ffi)
 
@@ -20,11 +27,19 @@
 
 (defcfun ("lapis_init" init) :int)
 
-(defcfun ("lsdl_set_video_mode" set-video-mode) :void
+(defmacro no-fp-traps (&body body)
+  `(sb-int:with-float-traps-masked (:invalid :divide-by-zero)
+     ,@body))
+
+(defcfun ("lsdl_set_video_mode" set-video-mode-f) :void
   (screen-width :uint)
   (screen-height :uint)
   (fullscreen :uchar)
   (resizeable :uchar))
+
+(defun set-video-mode (&rest args)
+  (no-fp-traps
+   (apply #'set-video-mode-f args)))
 
 (defcfun ("lsdl_fill_rect" sdl-fill-rect) :void
   (engine :pointer)
@@ -44,7 +59,8 @@
   (engine :pointer))
 
 (defun fill-rect (&rest args)
-  (apply #'sdl-fill-rect (null-pointer) args))
+  (no-fp-traps
+   (apply #'sdl-fill-rect (null-pointer) args)))
 
 (defun flip ()
   (sdl-flip (null-pointer)))
