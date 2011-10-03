@@ -11,3 +11,4 @@ libtool
 *.lo
 stamp-h1
 *.la
+*.fasl
