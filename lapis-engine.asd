@@ -12,6 +12,7 @@
    (:file "package")
    (:file "gameobject")
    (:file "gamestate")
+   (:file "message")      
    (:file "mainloop"))
   :serial t)
   

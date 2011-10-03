@@ -1,10 +1,14 @@
 (in-package :lapis)
 
+(export '(set-max-frame-skip
+          set-ticks-per-second
+          mainloop
+          set-gamestate))
+
 (defparameter *ticks-per-second* 15)
 (defparameter *time-per-tick* (/ 1000.0 *ticks-per-second*))
 (defparameter *max-frame-skip* 5)
 (defparameter *mainloop-running* t)
-(defparameter *gamestate* nil)
 
 (defun set-ticks-per-second (num)
   (setf *ticks-per-second* num
@@ -18,7 +22,7 @@
 
 (defun handle-events ()
   (with-foreign-object (event 'sdl-event)
-    (when (= (poll-event event) 1)
+    (loop until (/= (poll-event event) 1) do
       
       (when (sdl-event-mouse-motionp event)
         (multiple-value-bind (x y) (sdl-event-mouse-motion event)
@@ -34,13 +38,13 @@
 
 (defun update (game-tick)
   (when *gamestate*
-    (loop for obj in (gamestate-objects *gamestate*) do
+    (loop for obj being the hash-values of (gamestate-objects-by-name *gamestate*) do
          (funcall (game-object-update-func obj) obj game-tick))))
 
 (defun render (interpolation)
   (when *gamestate*
     (prepare-render)
-    (loop for obj in (gamestate-objects *gamestate*) do
+    (loop for obj being the hash-values of (gamestate-objects-by-name *gamestate*) do
          (funcall (game-object-render-func obj) obj interpolation))
     (flip)))
 

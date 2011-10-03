@@ -1,9 +1,11 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (load "~/quicklisp/setup.lisp"))
-
-(require :lapis-engine)
+  (load "~/quicklisp/setup.lisp")
+  (require :lapis-engine))
 
 (lapis:init)
+
+(lapis:set-gamestate (lapis:make-gamestate :name "play state"))
+
 (sb-int:with-float-traps-masked (:invalid :divide-by-zero)
   (lapis:set-video-mode 1024 768 0 1))
 
@@ -21,3 +23,4 @@
       (lapis::gamestate-objects *gs*))
 
 (lapis:mainloop)
+;;(lapis:end)

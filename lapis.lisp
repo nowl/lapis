@@ -2,6 +2,7 @@
   (:nicknames :lapis-ffi)
   (:use #:cl #:cffi)
   (:export #:init
+           #:end
            #:set-video-mode
            #:fill-rect
            #:prepare-render
@@ -26,6 +27,7 @@
 (load-foreign-library "liblapis.so" :search-path #p".")
 
 (defcfun ("lapis_init" init) :int)
+(defcfun ("lapis_deinit" end) :void)
 
 (defmacro no-fp-traps (&body body)
   `(sb-int:with-float-traps-masked (:invalid :divide-by-zero)
