@@ -3,9 +3,9 @@
 (export '(send-message))
 
 (defstruct message
-  (sender nil :type (or game-object null))
-  (receiver nil :type (or game-object null))
-  (type "generic" :type string)
+  (sender nil :type (or string null))
+  (receiver nil :type (or string null))
+  (type "generic")
   (payload))
 
 
@@ -18,7 +18,7 @@
     (:async (funcall (game-object-message-handler-func receiver) message))))
 
 
-(defun pass-to-broadcast-receivers (name message delivery-type)
+(defun pass-to-broadcast-receivers (name message delivery-type)  
   (declare (string name)
            (message message)
            (symbol delivery-type))
@@ -27,17 +27,19 @@
          (add-to-message-list rec message delivery-type))))
 
 (defun send-message (&key sender receiver type payload (delivery-type :sync))
-  (declare ((or game-object string null) sender receiver)
-           (string type))  
+  (declare ((or game-object string null) sender receiver))
   (let ((mes (make-message :sender (typecase sender
-                                     (string (find-object sender))
-                                     (t sender))
+                                     (string sender)
+                                     (game-object (game-object-name sender)))
                            :receiver (typecase receiver
-                                       (string (find-object receiver))
-                                       (t receiver))
+                                       (string receiver)
+                                       (game-object (game-object-name receiver)))
                            :type type :payload payload)))
     (if receiver
-        (add-to-message-list receiver mes delivery-type)
+        (add-to-message-list (typecase receiver
+                               (string (find-object receiver))
+                               (game-object receiver))
+                             mes delivery-type)
         (pass-to-broadcast-receivers type mes delivery-type))))
   
   

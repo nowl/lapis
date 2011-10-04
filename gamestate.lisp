@@ -1,6 +1,10 @@
 (in-package :lapis)
 
-(export '(make-gamestate))
+(export '(make-gamestate
+          find-object
+          find-receivers
+          make-broadcast-receiver
+          new-game-object))
 
 (defparameter *gamestate* nil)
 
