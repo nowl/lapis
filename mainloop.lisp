@@ -27,7 +27,7 @@
            (multiple-value-bind (x y) (sdl-event-mouse-motion event)
              (send-message :type "sdl-event" :payload `(:mouse ,x ,y))))
          (when (sdl-event-quitp event)
-           (send-message :type "sdl-event" :payload '(:quit) :delivery-type :async))
+           (send-message :type "sdl-event" :payload '(:quit)))
          (when (sdl-event-keyp event)
            (let ((key (sdl-event-key event)))
              (send-message :type "sdl-event" :payload `(:key ,key)))))))
