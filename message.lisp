@@ -15,7 +15,7 @@
            (symbol delivery-type))
   (ecase delivery-type
     (:sync (push message (game-object-messages receiver)))
-    (:async (funcall (game-object-message-handler-func receiver) message))))
+    (:async (funcall (game-object-message-handler-func receiver) message receiver))))
 
 
 (defun pass-to-broadcast-receivers (name message delivery-type)  

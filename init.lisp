@@ -6,6 +6,17 @@
 
 (lapis:set-gamestate (lapis:make-gamestate :name "play state"))
 
+(lapis:new-game-object "obj 1" 
+                       :message-handler-func
+                       (lambda (message recv)
+                         (destructuring-bind (command &rest args) (message-payload message)
+                           (declare (ignore args))
+                           (if (eq command 'quit)
+                               (setf *mainloop-running* nil)))))
+
+(lapis:make-broadcast-receiver "obj 1" "sdl-event")
+
+
 (sb-int:with-float-traps-masked (:invalid :divide-by-zero)
   (lapis:set-video-mode 1024 768 0 1))
 

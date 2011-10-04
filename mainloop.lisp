@@ -23,29 +23,28 @@
 (defun handle-events ()
   (with-foreign-object (event 'sdl-event)
     (loop until (/= (poll-event event) 1) do
-      
-      (when (sdl-event-mouse-motionp event)
-        (multiple-value-bind (x y) (sdl-event-mouse-motion event)
-          (format t "mouse ~d,~d~%" x y)))
-      
-      (when (sdl-event-quitp event)
-        (setf *mainloop-running* nil))
-      (when (sdl-event-keyp event)
-        (let ((key (sdl-event-key event)))
-          (if (= key 27)
-              (setf *mainloop-running* nil)
-              (format t "result ~d~%" key)))))))
+         (when (sdl-event-mouse-motionp event)
+           (multiple-value-bind (x y) (sdl-event-mouse-motion event)
+             (send-message :type "sdl-event" :payload `(:mouse ,x ,y))))
+         (when (sdl-event-quitp event)
+           (send-message :type "sdl-event" :payload '(:quit) :delivery-type :async))
+         (when (sdl-event-keyp event)
+           (let ((key (sdl-event-key event)))
+             (send-message :type "sdl-event" :payload `(:key ,key)))))))
 
 (defun update (game-tick)
   (when *gamestate*
     (loop for obj being the hash-values of (gamestate-objects-by-name *gamestate*) do
-         (funcall (game-object-update-func obj) obj game-tick))))
+         (process-messages obj)
+         (when (game-object-update-func obj)
+           (funcall (game-object-update-func obj) obj game-tick)))))
 
 (defun render (interpolation)
   (when *gamestate*
     (prepare-render)
     (loop for obj being the hash-values of (gamestate-objects-by-name *gamestate*) do
-         (funcall (game-object-render-func obj) obj interpolation))
+         (when (game-object-render-func obj)
+           (funcall (game-object-render-func obj) obj interpolation)))
     (flip)))
 
 (defun mainloop ()
