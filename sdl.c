@@ -148,7 +148,7 @@ lsdl_set_video_mode(unsigned int screen_width,
 }
 
 void
-lsdl_fill_rect(engine_t *engine, float x, float y, float w, float h, float red, float green, float blue)
+lsdl_fill_rect(float x, float y, float w, float h, float red, float green, float blue)
 {
     glColor3f(red, green, blue);
 
@@ -163,7 +163,7 @@ lsdl_fill_rect(engine_t *engine, float x, float y, float w, float h, float red, 
 #if 0
 
 void
-lsdl_draw_image(engine_t *engine, GLuint texture, float x, float y, float w, float h, float r, float g, float b)
+lsdl_draw_image(GLuint texture, float x, float y, float w, float h, float r, float g, float b)
 {
     glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -184,8 +184,7 @@ lsdl_draw_image(engine_t *engine, GLuint texture, float x, float y, float w, flo
 }
 
 void
-lsdl_draw_text(engine_t *engine,
-               char *font_name, int pt_size,
+lsdl_draw_text(char *font_name, int pt_size,
                char *text, int r, int g, int b,
                int x, int y)
 {
@@ -221,7 +220,7 @@ lsdl_draw_text(engine_t *engine,
 
     SDL_FreeSurface(corrected_surf);
 
-    lsdl_draw_image(engine, texture,
+    lsdl_draw_image(texture,
                     x,
                     y,
                     surf->w,
@@ -245,7 +244,7 @@ lsdl_prepare_render()
 }
 
 void
-lsdl_flip(engine_t * engine)
+lsdl_flip()
 {
     SDL_GL_SwapBuffers();
 }

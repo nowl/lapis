@@ -44,7 +44,6 @@
    (apply #'set-video-mode-f args)))
 
 (defcfun ("lsdl_fill_rect" sdl-fill-rect) :void
-  (engine :pointer)
   (x :float)
   (y :float)
   (w :float)
@@ -57,15 +56,14 @@
 
 (defcfun ("lsdl_get_tick" get-tick) :uint)
 
-(defcfun ("lsdl_flip" sdl-flip) :void
-  (engine :pointer))
+(defcfun ("lsdl_flip" sdl-flip) :void)
 
 (defun fill-rect (&rest args)
   (no-fp-traps
-   (apply #'sdl-fill-rect (null-pointer) args)))
+   (apply #'sdl-fill-rect args)))
 
 (defun flip ()
-  (sdl-flip (null-pointer)))
+  (sdl-flip))
 
 ;; event stuff
 
