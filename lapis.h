@@ -46,6 +46,8 @@ void lsdl_draw_text(char *font_name, int pt_size,
                     int x, int y);
 void lsdl_flip();
 void lsdl_prepare_render();
+void lsdl_enable_smooth_lines();
+void lsdl_draw_line(float sx, float sy, float ex, float ey, float sr, float sg, float sb, float er, float eg, float eb);
 
 /* lapis */
 

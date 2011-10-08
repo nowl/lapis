@@ -5,6 +5,8 @@
            #:end
            #:set-video-mode
            #:fill-rect
+           #:enable-smooth-lines
+           #:draw-line
            #:prepare-render
            #:flip
            #:get-tick
@@ -13,6 +15,8 @@
            #:sdl-event-mouse-motionp
            #:sdl-event-mouse-motion
            #:sdl-event-quitp
+           #:sdl-event-resizep
+           #:sdl-event-resize
            #:sdl-event-keyp
            #:sdl-event-key))
 
@@ -56,14 +60,36 @@
 
 (defcfun ("lsdl_get_tick" get-tick) :uint)
 
-(defcfun ("lsdl_flip" sdl-flip) :void)
+(defcfun ("lsdl_flip" lsdl-flip) :void)
+
+(defcfun ("lsdl_enable_smooth_lines" lsdl-enable-smooth-lines) :void)
+(defcfun ("lsdl_draw_line" lsdl-draw-line) :void
+  (sx :float)
+  (sy :float)
+  (ex :float)
+  (ey :float)
+  (sr :float)
+  (sg :float)
+  (sb :float)
+  (er :float)
+  (eg :float)
+  (eb :float))
+
+(defun enable-smooth-lines ()
+  (no-fp-traps
+    (funcall #'lsdl-enable-smooth-lines)))
+
+(defun draw-line (&rest args)
+  (no-fp-traps
+    (apply #'lsdl-draw-line args)))
 
 (defun fill-rect (&rest args)
   (no-fp-traps
    (apply #'sdl-fill-rect args)))
 
 (defun flip ()
-  (sdl-flip))
+  (no-fp-traps
+    (funcall #'lsdl-flip)))
 
 ;; event stuff
 
@@ -128,3 +154,11 @@
                         'event-data-data 'mouse-motion)
                        event-data-data-mouse-motion)
     (values x y)))
+
+(defun sdl-event-resize (event)
+  (with-foreign-slots ((width height) 
+                       (foreign-slot-pointer
+                        (foreign-slot-pointer event 'sdl-event 'data)
+                        'event-data-data 'resize)
+                       event-data-data-resize)
+    (values width height)))

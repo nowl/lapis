@@ -1,6 +1,7 @@
 (in-package :lapis)
 
-(export '(send-message))
+(export '(send-message
+          message-payload))
 
 (defstruct message
   (sender nil :type (or string null))

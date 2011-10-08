@@ -3,7 +3,8 @@
 (export '(set-max-frame-skip
           set-ticks-per-second
           mainloop
-          set-gamestate))
+          set-gamestate
+          *mainloop-running*))
 
 (defparameter *ticks-per-second* 15)
 (defparameter *time-per-tick* (/ 1000.0 *ticks-per-second*))
@@ -28,6 +29,9 @@
              (send-message :type "sdl-event" :payload `(:mouse ,x ,y))))
          (when (sdl-event-quitp event)
            (send-message :type "sdl-event" :payload '(:quit)))
+         (when (sdl-event-resizep event)
+           (multiple-value-bind (width height) (sdl-event-resize event)
+             (send-message :type "sdl-event" :payload `(:resize ,width ,height))))
          (when (sdl-event-keyp event)
            (let ((key (sdl-event-key event)))
              (send-message :type "sdl-event" :payload `(:key ,key)))))))

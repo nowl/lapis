@@ -113,8 +113,6 @@ setup_screen_params(int flags, int w, int h)
     //glFrontFace( GL_CCW );
     //glEnable( GL_CULL_FACE );
 
-    LOG("a\n");
-
     glClearColor( 0, 0, 0, 0 );
     glViewport( 0, 0, w, h );
 
@@ -157,6 +155,17 @@ lsdl_fill_rect(float x, float y, float w, float h, float red, float green, float
     glVertex2f(x+w, y);
     glVertex2f(x+w, y+h);
     glVertex2f(x, y+h);
+    glEnd();
+}
+
+void
+lsdl_draw_line(float sx, float sy, float ex, float ey, float sr, float sg, float sb, float er, float eg, float eb)
+{
+    glBegin(GL_LINES);
+    glColor3f(sr, sg, sb);
+    glVertex2f(sx, sy);
+    glColor3f(er, eg, eb);
+    glVertex2f(ex, ey);
     glEnd();
 }
 
@@ -249,3 +258,11 @@ lsdl_flip()
     SDL_GL_SwapBuffers();
 }
 
+void
+lsdl_enable_smooth_lines()
+{
+    glEnable( GL_LINE_SMOOTH );
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}

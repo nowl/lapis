@@ -7,5 +7,7 @@
            #:end
            #:set-video-mode
            #:fill-rect
+           #:enable-smooth-lines
+           #:draw-line
            #:prepare-render
            #:flip))
