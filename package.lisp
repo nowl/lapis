@@ -6,7 +6,8 @@
   (:export #:init
            #:end
            #:set-video-mode
-           #:fill-rect
+           #:draw-rect
+           #:draw-point
            #:enable-smooth-lines
            #:draw-line
            #:prepare-render

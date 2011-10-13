@@ -169,6 +169,15 @@ lsdl_draw_line(float sx, float sy, float ex, float ey, float sr, float sg, float
     glEnd();
 }
 
+void
+lsdl_draw_point(float x, float y, float r, float g, float b)
+{
+    glBegin(GL_POINTS);
+    glColor3f(r, g, b);
+    glVertex2f(x, y);
+    glEnd();
+}
+
 #if 0
 
 void

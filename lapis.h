@@ -48,6 +48,7 @@ void lsdl_flip();
 void lsdl_prepare_render();
 void lsdl_enable_smooth_lines();
 void lsdl_draw_line(float sx, float sy, float ex, float ey, float sr, float sg, float sb, float er, float eg, float eb);
+void lsdl_draw_point(float x, float y, float r, float g, float b);
 
 /* lapis */
 

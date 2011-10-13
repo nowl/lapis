@@ -4,12 +4,15 @@
           set-ticks-per-second
           mainloop
           set-gamestate
-          *mainloop-running*))
+          *mainloop-running*
+          *game-tick*))
 
 (defparameter *ticks-per-second* 15)
 (defparameter *time-per-tick* (/ 1000.0 *ticks-per-second*))
 (defparameter *max-frame-skip* 5)
 (defparameter *mainloop-running* t)
+
+(defparameter *game-tick* 0)
 
 (defun set-ticks-per-second (num)
   (setf *ticks-per-second* num
@@ -36,12 +39,12 @@
            (let ((key (sdl-event-key event)))
              (send-message :type "sdl-event" :payload `(:key ,key)))))))
 
-(defun update (game-tick)
+(defun update ()
   (when *gamestate*
     (loop for obj being the hash-values of (gamestate-objects-by-name *gamestate*) do
          (process-messages obj)
          (when (game-object-update-func obj)
-           (funcall (game-object-update-func obj) obj game-tick)))))
+           (funcall (game-object-update-func obj) obj)))))
 
 (defun render (interpolation)
   (when *gamestate*
@@ -54,7 +57,6 @@
 (defun mainloop ()
   (let ((next-game-tick (get-tick))
         (fps-counter 0)
-        (game-tick 0)
         (fps-start-time (get-tick)))
 
     (loop while *mainloop-running* do
@@ -65,8 +67,8 @@
                (tick (get-tick)))
            (loop while (and (> tick next-game-tick)
                             (< loops *max-frame-skip*)) do
-                (incf game-tick)
-                (update game-tick)
+                (incf *game-tick*)
+                (update)
                 (incf next-game-tick *time-per-tick*)
                 (incf loops)
                 (setf tick (get-tick)))

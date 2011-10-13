@@ -4,7 +4,8 @@
   (:export #:init
            #:end
            #:set-video-mode
-           #:fill-rect
+           #:draw-rect
+           #:draw-point
            #:enable-smooth-lines
            #:draw-line
            #:prepare-render
@@ -47,11 +48,18 @@
   (no-fp-traps
    (apply #'set-video-mode-f args)))
 
-(defcfun ("lsdl_fill_rect" sdl-fill-rect) :void
+(defcfun ("lsdl_fill_rect" lsdl-fill-rect) :void
   (x :float)
   (y :float)
   (w :float)
   (h :float)
+  (red :float)
+  (green :float)
+  (blue :float))
+
+(defcfun ("lsdl_draw_point" lsdl-draw-point) :void
+  (x :float)
+  (y :float)
   (red :float)
   (green :float)
   (blue :float))
@@ -81,11 +89,15 @@
 
 (defun draw-line (&rest args)
   (no-fp-traps
-    (apply #'lsdl-draw-line args)))
+    (apply #'lsdl-draw-line (mapcar #'float args))))
 
-(defun fill-rect (&rest args)
+(defun draw-point (&rest args)
   (no-fp-traps
-   (apply #'sdl-fill-rect args)))
+    (apply #'lsdl-draw-point args)))
+
+(defun draw-rect (&rest args)
+  (no-fp-traps
+   (apply #'lsdl-fill-rect args)))
 
 (defun flip ()
   (no-fp-traps
