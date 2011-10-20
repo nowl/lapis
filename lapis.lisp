@@ -3,6 +3,8 @@
   (:use #:cl #:cffi)
   (:export #:init
            #:end
+           #:gl-begin
+           #:gl-end
            #:set-video-mode
            #:draw-rect
            #:draw-point
@@ -30,6 +32,23 @@
 (load-foreign-library "libSDL_ttf.so")
 (load-foreign-library "libSDL_image.so")
 (load-foreign-library "liblapis.so" :search-path #p".")
+
+(defconstant +gl-points+ #x0)
+(defconstant +gl-lines+ #x1)
+(defconstant +gl-line-loop+ #x2)
+(defconstant +gl-line-strip+ #x3)
+(defconstant +gl-triangles+ #x4)
+(defconstant +gl-triangle-strip+ #x5)
+(defconstant +gl-triangle-fan+ #x6)
+(defconstant +gl-quads+ #x7)
+(defconstant +gl-quad-strip+ #x8)
+(defconstant +gl-polygon+ #x9)
+
+;; TODO: instead of draw-rect, draw-line etc. just make direct calls to glvector, etc.
+
+(defcfun ("glBegin" lsdl-gl-begin) :void
+  (type :int))
+(defcfun ("glEnd" gl-end) :void)
 
 (defcfun ("lapis_init" init) :int)
 (defcfun ("lapis_deinit" end) :void)
@@ -94,6 +113,10 @@
 (defun draw-point (&rest args)
   (no-fp-traps
     (apply #'lsdl-draw-point args)))
+
+(defun gl-begin (&rest args)
+  (no-fp-traps
+   (apply #'lsdl-gl-begin args)))
 
 (defun draw-rect (&rest args)
   (no-fp-traps

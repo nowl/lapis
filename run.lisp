@@ -121,10 +121,12 @@
 
 (lapis:new-game-object "test obj"
                        :render-func #'(lambda (obj int)
+                                        (lapis-ffi:gl-begin lapis-ffi::+gl-quads+)
                                         (lapis:draw-rect (lapis:get-meta obj :x)
                                                          (lapis:get-meta obj :y)
                                                          32.0 32.0
-                                                         0.0 0.0 1.0))
+                                                         0.0 0.0 1.0)
+                                        (lapis-ffi:gl-end))
                        :message-handler-func 
                        #'(lambda (message recv)
                            (let ((pay (lapis:message-payload message)))
@@ -141,6 +143,20 @@
                                                 :type :toggle
                                                 :payload t)))))))
 
+(loop with rd = 30 for xr below 10 do
+     (lapis:new-game-object (symbol-name (gensym))
+                            :render-func #'(lambda (obj int)
+                                             (lapis-ffi:gl-begin lapis-ffi::+gl-lines+)
+                                             (let ((x (* 3 xr (/ rd 2.0))) (y 100) (r 0.0) (g 0.0) (b 1.0))
+                                               (lapis:draw-line (+ x rd) y (+ x (* rd 0.5)) (+ y (* rd (sqrt 3) 0.5)) r g b r g b)
+                                               (lapis:draw-line (+ x (* rd 0.5)) (+ y (* rd (sqrt 3) 0.5)) (- x (* rd 0.5)) (+ y (* rd (sqrt 3) 0.5)) r g b r g b)
+                                               (lapis:draw-line (- x (* rd 0.5)) (+ y (* rd (sqrt 3) 0.5)) (- x rd) y r g b r g b)
+                                               (lapis:draw-line (- x rd) y (- x (* rd 0.5)) (- y (* rd (sqrt 3) 0.5)) r g b r g b)
+                                               (lapis:draw-line (- x (* rd 0.5)) (- y (* rd (sqrt 3) 0.5)) (+ x (* rd 0.5)) (- y (* rd (sqrt 3) 0.5)) r g b r g b)
+                                               (lapis:draw-line (+ x (* rd 0.5)) (- y (* rd (sqrt 3) 0.5)) (+ x rd) y r g b r g b))
+                                             
+                                             (lapis-ffi:gl-end))))
+
 #s("test obj" :x 150.0)
 #s("test obj" :y 150.0)
 
@@ -155,10 +171,12 @@
                           (w #g(obj :w))
                           (h #g(obj :h))
                           (r 1.0) (g 0.0) (b 0.0))
+                      (lapis-ffi:gl-begin lapis-ffi::+gl-lines+)
                       (lapis:draw-line x y (+ w x) y r g b r g b)
                       (lapis:draw-line (+ w x) y (+ w x) (+ h y) r g b r g b)
                       (lapis:draw-line (+ w x) (+ h y) x (+ h y) r g b r g b)
-                      (lapis:draw-line x (+ h y) x y r g b r g b))))
+                      (lapis:draw-line x (+ h y) x y r g b r g b)
+                      (lapis-ffi:gl-end))))
 
  :update-func #'(lambda (obj)                  
                   (let ((lct #g(obj :last-change-tick)))

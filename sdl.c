@@ -150,32 +150,32 @@ lsdl_fill_rect(float x, float y, float w, float h, float red, float green, float
 {
     glColor3f(red, green, blue);
 
-    glBegin(GL_QUADS);
+    //glBegin(GL_QUADS);
     glVertex2f(x, y);
     glVertex2f(x+w, y);
     glVertex2f(x+w, y+h);
     glVertex2f(x, y+h);
-    glEnd();
+    //glEnd();
 }
 
 void
 lsdl_draw_line(float sx, float sy, float ex, float ey, float sr, float sg, float sb, float er, float eg, float eb)
 {
-    glBegin(GL_LINES);
+    //glBegin(GL_LINES);
     glColor3f(sr, sg, sb);
     glVertex2f(sx, sy);
     glColor3f(er, eg, eb);
     glVertex2f(ex, ey);
-    glEnd();
+    //glEnd();
 }
 
 void
 lsdl_draw_point(float x, float y, float r, float g, float b)
 {
-    glBegin(GL_POINTS);
+    //glBegin(GL_POINTS);
     glColor3f(r, g, b);
     glVertex2f(x, y);
-    glEnd();
+    //glEnd();
 }
 
 #if 0
