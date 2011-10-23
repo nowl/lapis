@@ -15,6 +15,8 @@
            #:get-tick
            #:poll-event
            #:sdl-event
+           #:sdl-event-mouse-buttonp
+           #:sdl-event-mouse-button
            #:sdl-event-mouse-motionp
            #:sdl-event-mouse-motion
            #:sdl-event-quitp
@@ -48,7 +50,7 @@
 
 (defcfun ("glBegin" lsdl-gl-begin) :void
   (type :int))
-(defcfun ("glEnd" gl-end) :void)
+(defcfun ("glEnd" lsdl-gl-end) :void)
 
 (defcfun ("lapis_init" init) :int)
 (defcfun ("lapis_deinit" end) :void)
@@ -118,6 +120,10 @@
   (no-fp-traps
    (apply #'lsdl-gl-begin args)))
 
+(defun gl-end ()
+  (no-fp-traps
+   (funcall #'lsdl-gl-end)))
+
 (defun draw-rect (&rest args)
   (no-fp-traps
    (apply #'lsdl-fill-rect args)))
@@ -181,6 +187,14 @@
     (foreign-slot-pointer event 'sdl-event 'data)
     'event-data-data 'key)
    'event-data-data-key 'key))
+
+(defun sdl-event-mouse-button (event)
+  (with-foreign-slots ((type x y button) 
+                       (foreign-slot-pointer
+                        (foreign-slot-pointer event 'sdl-event 'data)
+                        'event-data-data 'mouse-button)
+                       event-data-data-mouse-button)
+    (values type x y button)))
 
 (defun sdl-event-mouse-motion (event)
   (with-foreign-slots ((x y) 

@@ -29,7 +29,10 @@
     (loop until (/= (poll-event event) 1) do
          (when (sdl-event-mouse-motionp event)
            (multiple-value-bind (x y) (sdl-event-mouse-motion event)
-             (send-message :type "sdl-event" :payload `(:mouse ,x ,y))))
+             (send-message :type "sdl-event" :payload `(:mouse-motion ,x ,y))))
+         (when (sdl-event-mouse-buttonp event)
+           (multiple-value-bind (type x y button) (sdl-event-mouse-button event)
+             (send-message :type "sdl-event" :payload `(:mouse-button , type ,x ,y ,button))))
          (when (sdl-event-quitp event)
            (send-message :type "sdl-event" :payload '(:quit)))
          (when (sdl-event-resizep event)
@@ -78,8 +81,8 @@
              (render interpolation))
          
            (incf fps-counter)           
-           #+debug
-           (if (> (- (get-tick) fps-start-time) 1000)
-               (setf fps-counter 0
-                     fps-start-time (get-tick))
-               (format t "fps = ~d~%" fps-counter))))))
+           #-debug
+           (when (> (- (get-tick) fps-start-time) 1000)
+             (format t "fps = ~d~%" fps-counter)
+             (setf fps-counter 0
+                   fps-start-time (get-tick)))))))

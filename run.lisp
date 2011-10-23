@@ -4,6 +4,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (require :lapis-engine))
 
+;;(ql:quickload "swank")
+;;(swank:create-server :port 4005 :style :spawn :dont-close t)
+
 (defun send-message-reader (stream subchar arg)
   (declare (ignore subchar arg))
   `(lapis:send-message ,@(read stream t nil t)))
@@ -27,8 +30,20 @@
                        :message-handler-func
                        (lambda (message recv)
                          (destructuring-bind (command &rest args) (lapis:message-payload message)
-                           (when (eq command :mouse)
-                             #m(:type "mouse move event" :payload `(:mouse-move-event ,(first args) ,(second args))))
+                           (when (eq command :mouse-motion)
+                             (when (eq *mouse-left-state* :down)
+                               (let ((movex (- (first args) (first *dragging-position*)))
+                                     (movey (- (second args) (second *dragging-position*))))
+                                 #m(:type "mouse move event" :payload `(:mouse-move-event 
+                                                                        ,movex
+                                                                        ,movey)))))
+                           (when (eq command :mouse-button)
+                             (when (= (fourth args) 1)
+                               (cond
+                                 ((= (first args) 1)
+                                  (setf *mouse-left-state* :down
+                                        *dragging-position* (subseq args 1 3)))
+                                 (t (setf *mouse-left-state* :up)))))
                            (when (eq command :resize)
                              (setf *screen-width* (first args)
                                    *screen-height* (second args))
@@ -44,7 +59,7 @@
 
 (lapis:enable-smooth-lines)
 
-(lapis:set-ticks-per-second 30)
+(lapis:set-ticks-per-second 60)
 
 #|
 (defparameter *lines* nil)
@@ -119,6 +134,11 @@
 (lapis:new-game-object "render obj" :render-func #'render1 :update-func #'update1)
 |#
 
+(defparameter *mousex* 0)
+(defparameter *mousey* 0)
+(defparameter *mouse-left-state* :up)
+(defparameter *dragging-position* (list 0 0))
+
 (lapis:new-game-object "test obj"
                        :render-func #'(lambda (obj int)
                                         (lapis-ffi:gl-begin lapis-ffi::+gl-quads+)
@@ -132,6 +152,8 @@
                            (let ((pay (lapis:message-payload message)))
                              (when (eq (first pay) :mouse-move-event)
                                (destructuring-bind (x y) (cdr pay)
+                                 (setf *mousex* x
+                                       *mousey* y)
                                  (when (and (>= x #g(recv :x))
                                             (< x (+ #g(recv :x) 32))
                                             (>= y #g(recv :y))
@@ -143,19 +165,33 @@
                                                 :type :toggle
                                                 :payload t)))))))
 
-(loop with rd = 30 for xr below 10 do
-     (lapis:new-game-object (symbol-name (gensym))
-                            :render-func #'(lambda (obj int)
-                                             (lapis-ffi:gl-begin lapis-ffi::+gl-lines+)
-                                             (let ((x (* 3 xr (/ rd 2.0))) (y 100) (r 0.0) (g 0.0) (b 1.0))
-                                               (lapis:draw-line (+ x rd) y (+ x (* rd 0.5)) (+ y (* rd (sqrt 3) 0.5)) r g b r g b)
-                                               (lapis:draw-line (+ x (* rd 0.5)) (+ y (* rd (sqrt 3) 0.5)) (- x (* rd 0.5)) (+ y (* rd (sqrt 3) 0.5)) r g b r g b)
-                                               (lapis:draw-line (- x (* rd 0.5)) (+ y (* rd (sqrt 3) 0.5)) (- x rd) y r g b r g b)
-                                               (lapis:draw-line (- x rd) y (- x (* rd 0.5)) (- y (* rd (sqrt 3) 0.5)) r g b r g b)
-                                               (lapis:draw-line (- x (* rd 0.5)) (- y (* rd (sqrt 3) 0.5)) (+ x (* rd 0.5)) (- y (* rd (sqrt 3) 0.5)) r g b r g b)
-                                               (lapis:draw-line (+ x (* rd 0.5)) (- y (* rd (sqrt 3) 0.5)) (+ x rd) y r g b r g b))
-                                             
-                                             (lapis-ffi:gl-end))))
+(defun hex-render (x-pos y-pos radius r g b)
+  (lapis-ffi:gl-begin lapis-ffi::+gl-lines+)
+  (let ((x (+ *mousex* (* 3 x-pos (/ radius 2.0))))
+        (y (+ (* y-pos radius (sqrt 3))
+              *mousey*
+              (if (= 0 (mod x-pos 2))
+                  (* (sqrt 3) radius 0.5)
+                  0)))
+        (r 0.0) (g 0.0) (b 1.0))
+    (lapis:draw-line (+ x radius) y (+ x (* radius 0.5)) (+ y (* radius (sqrt 3) 0.5)) r g b r g b)
+    (lapis:draw-line (+ x (* radius 0.5)) (+ y (* radius (sqrt 3) 0.5))
+                     (- x (* radius 0.5)) (+ y (* radius (sqrt 3) 0.5)) r g b r g b)
+    (lapis:draw-line (- x (* radius 0.5)) (+ y (* radius (sqrt 3) 0.5)) (- x radius) y r g b r g b)
+    (lapis:draw-line (- x radius) y (- x (* radius 0.5)) (- y (* radius (sqrt 3) 0.5)) r g b r g b)
+    (lapis:draw-line (- x (* radius 0.5)) (- y (* radius (sqrt 3) 0.5))
+                     (+ x (* radius 0.5)) (- y (* radius (sqrt 3) 0.5)) r g b r g b)
+    (lapis:draw-line (+ x (* radius 0.5)) (- y (* radius (sqrt 3) 0.5)) (+ x radius) y r g b r g b))
+  
+  (lapis-ffi:gl-end))
+
+(loop with rd = 10 for xrt fixnum below 20 do
+     (loop for yrt fixnum below 20 do
+          (let ((xr xrt)
+                (yr yrt))
+            (lapis:new-game-object (symbol-name (gensym "hex_"))                            
+                                   :render-func #'(lambda (obj int)
+                                                    (hex-render xr yr rd 0.0 0.0 1.0))))))
 
 #s("test obj" :x 150.0)
 #s("test obj" :y 150.0)
