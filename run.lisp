@@ -26,113 +26,47 @@
 (lapis:init)
 
 (lapis:set-gamestate (lapis:make-gamestate :name "play state"))
-(lapis:new-game-object "obj 1" 
+
+(lapis:new-game-object "quit listener"
+                       :message-handler-func
+                       (lambda (message recv)
+                         (let ((pl (lapis:message-payload message)))
+                           (when (or (equal (lapis:message-type message) "quit event")
+                                     (and (equal (lapis:message-type message) "key event")
+                                          (= (car pl) 27)))
+                             (setf lapis:*mainloop-running* nil)))))
+
+(lapis:make-broadcast-receiver "quit listener" "key event")
+(lapis:make-broadcast-receiver "quit listener" "quit event")
+
+(lapis:new-game-object "resizer"
+                       :message-handler-func
+                       (lambda (message recv)
+                         (let ((pl (lapis:message-payload message)))
+                           (setf *screen-width* (first pl)
+                                 *screen-height* (second pl))
+                           (lapis:set-video-mode *screen-width* *screen-height* 0 1))))
+
+(lapis:make-broadcast-receiver "resizer" "resize event")
+
+(lapis:new-game-object "sdl-event dispatcher" 
                        :message-handler-func
                        (lambda (message recv)
                          (destructuring-bind (command &rest args) (lapis:message-payload message)
-                           (when (eq command :mouse-motion)
-                             (when (eq *mouse-left-state* :down)
-                               (let ((movex (- (first args) (first *dragging-position*)))
-                                     (movey (- (second args) (second *dragging-position*))))
-                                 #m(:type "mouse move event" :payload `(:mouse-move-event 
-                                                                        ,movex
-                                                                        ,movey)))))
-                           (when (eq command :mouse-button)
-                             (when (= (fourth args) 1)
-                               (cond
-                                 ((= (first args) 1)
-                                  (setf *mouse-left-state* :down
-                                        *dragging-position* (subseq args 1 3)))
-                                 (t (setf *mouse-left-state* :up)))))
-                           (when (eq command :resize)
-                             (setf *screen-width* (first args)
-                                   *screen-height* (second args))
-                             (lapis:set-video-mode *screen-width* *screen-height* 0 1))
-                           (when (or (eq command :quit)
-                                     (and (eq command :key)
-                                          (= (car args) 27)))
-                             (setf lapis:*mainloop-running* nil)))))
+                           (cond
+                             ((eq command :mouse-motion) #m(:type "mouse move event" :payload args))
+                             ((eq command :mouse-button) #m(:type "mouse button event" :payload args))
+                             ((eq command :resize) #m(:type "resize event" :payload args))                              
+                             ((eq command :quit) #m(:type "quit event"))
+                             ((eq command :key) #m(:type "key event" :payload args))))))
 
-(lapis:make-broadcast-receiver "obj 1" "sdl-event")
+(lapis:make-broadcast-receiver "sdl-event dispatcher" "sdl-event")
 
 (lapis:set-video-mode *screen-width* *screen-height* 0 1)
 
 (lapis:enable-smooth-lines)
 
 (lapis:set-ticks-per-second 60)
-
-#|
-(defparameter *lines* nil)
-(defparameter *quads* nil)
-(defparameter *points* nil)
-         
-(defun make-lines ()
-  (setf *lines*
-        (cdr
-         (loop with prev-x with prev-y for i below 100 collect
-              (let ((x (* *screen-width* (random 1.0)))
-                    (y (* *screen-height* (random 1.0))))
-                (prog1
-                    (when (and prev-x prev-y)
-                      (list (list prev-x prev-y)
-                            (list x y)
-                            (list (random 1.0) (random 1.0) (random 1.0))
-                            (list (random 1.0) (random 1.0) (random 1.0))))
-                  (setf prev-x x
-                        prev-y y))))))) 
-
-(defun make-quads ()
-  (setf *quads*
-        (loop for i below 100 collect
-             (let ((x (* *screen-width* (random 1.0)))
-                   (y (* *screen-height* (random 1.0))))
-               (prog1
-                   (list (list x y)
-                         (list (* 100 (random 1.0)) (* 100 (random 1.0)))
-                         (list (random 1.0) (random 1.0) (random 1.0))))))))
-
-
-(defun make-points ()
-  (setf *points*
-        (loop for i below 10000 collect
-             (let ((x (* *screen-width* (random 1.0)))
-                   (y (* *screen-height* (random 1.0))))
-               (prog1
-                   (list (list x y)
-                         (list (random 1.0) (random 1.0) (random 1.0))))))))
-
-
-(make-lines)       
-(make-quads)
-(make-points)
-
-(defun render1 (obj i)
-  (lapis:draw-rect 0.0 0.0 (* (/ *screen-width* 10) (random 1.0)) 100.0 0.0 (random 1.0) 0.9)
-  (loop for line in *lines* do
-       (destructuring-bind ((sx sy) (ex ey) (sr sg sb) (er eg eb)) line
-         (lapis:draw-line sx sy ex ey
-                          sr sg sb
-                          er eg eb)))
-  (loop for quad in *quads* do
-       (destructuring-bind ((sx sy) (w h) (r g b)) quad
-         (lapis:draw-rect sx sy w h r g b)))
-  (loop for point in *points* do
-       (destructuring-bind ((x y) (r g b)) point
-         (loop for i from (- x 2) below (+ x 3) do
-              (lapis:draw-point i y r g b))
-         (loop for i from (- y 2) below (+ y 3) do
-              (lapis:draw-point x i r g b)))))
-
-(defun update1 (obj)
-  (lapis:update-every (60 :ticks obj tick :make-lines-update)
-    (make-lines))
-  (lapis:update-every (30 :ticks obj tick :make-quads-update)
-    (make-quads))
-  (lapis:update-every (15 :ticks obj tick :make-points-update)
-    (make-points)))
-
-(lapis:new-game-object "render obj" :render-func #'render1 :update-func #'update1)
-|#
 
 (defparameter *mousex* 0)
 (defparameter *mousey* 0)
@@ -149,9 +83,10 @@
                                         (lapis-ffi:gl-end))
                        :message-handler-func 
                        #'(lambda (message recv)
-                           (let ((pay (lapis:message-payload message)))
-                             (when (eq (first pay) :mouse-move-event)
-                               (destructuring-bind (x y) (cdr pay)
+                           (let ((pl (lapis:message-payload message))
+                                 (mt (lapis:message-type message)))
+                             (when (equal mt "mouse move event")
+                               (destructuring-bind (x y) pl
                                  (setf *mousex* x
                                        *mousey* y)
                                  (when (and (>= x #g(recv :x))
@@ -165,11 +100,11 @@
                                                 :type :toggle
                                                 :payload t)))))))
 
-(defun hex-render (x-pos y-pos radius r g b)
+(defun hex-render (x-pos x-offset y-pos y-offset radius r g b)
   (lapis-ffi:gl-begin lapis-ffi::+gl-lines+)
-  (let ((x (+ *mousex* (* 3 x-pos (/ radius 2.0))))
+  (let ((x (+ x-offset (* 3 x-pos (/ radius 2.0))))
         (y (+ (* y-pos radius (sqrt 3))
-              *mousey*
+              y-offset
               (if (= 0 (mod x-pos 2))
                   (* (sqrt 3) radius 0.5)
                   0)))
@@ -185,13 +120,47 @@
   
   (lapis-ffi:gl-end))
 
-(loop with rd = 10 for xrt fixnum below 20 do
-     (loop for yrt fixnum below 20 do
+(loop with rd = 50 for xrt fixnum below 10 do
+     (loop for yrt fixnum below 10 do
           (let ((xr xrt)
                 (yr yrt))
-            (lapis:new-game-object (symbol-name (gensym "hex_"))                            
-                                   :render-func #'(lambda (obj int)
-                                                    (hex-render xr yr rd 0.0 0.0 1.0))))))
+            (let ((obj
+                   (lapis:new-game-object (symbol-name (gensym "hex_"))                            
+                                          :render-func #'(lambda (obj int)
+                                                           (hex-render xr #g(obj :map-scroll-x)
+                                                                       yr #g(obj :map-scroll-y)
+                                                                       rd 0.0 0.0 1.0))
+                                          :message-handler-func #'(lambda (message recv)
+                                                                    (let ((pl (lapis:message-payload message))
+                                                                          (mt (lapis:message-type message)))
+                                                                      (cond
+                                                                        ((and (equal mt "mouse move event")
+                                                                              #g(recv :dragging))
+                                                                         #s(recv :map-scroll-x (+ #g(recv :prev-scroll-x) (- (first pl) #g(recv :click-x))))
+                                                                         #s(recv :map-scroll-y (+ #g(recv :prev-scroll-y) (- (second pl) #g(recv :click-y)))))
+                                                                        ((and (equal mt "mouse button event")
+                                                                              (= (first pl) 1)
+                                                                              (= (fourth pl) 1))
+                                                                         #s(recv :dragging t)
+                                                                         #s(recv :click-x (second pl))
+                                                                         #s(recv :click-y (third pl)))
+                                                                        ((and (equal mt "mouse button event")
+                                                                              (= (first pl) 0)
+                                                                              (= (fourth pl) 1))
+                                                                         #s(recv :prev-scroll-x (+ #g(recv :prev-scroll-x) (- (second pl) #g(recv :click-x))))
+                                                                         #s(recv :prev-scroll-y (+ #g(recv :prev-scroll-y) (- (third pl) #g(recv :click-y))))
+                                                                         #s(recv :dragging nil))))))))                                                                         
+
+              (lapis:make-broadcast-receiver obj "mouse move event")
+              (lapis:make-broadcast-receiver obj "mouse button event")
+
+              #s(obj :dragging nil)
+              #s(obj :click-x 0)
+              #s(obj :click-y 0)
+              #s(obj :prev-scroll-x 0)
+              #s(obj :prev-scroll-y 0)
+              #s(obj :map-scroll-x 0)
+              #s(obj :map-scroll-y 0)))))
 
 #s("test obj" :x 150.0)
 #s("test obj" :y 150.0)

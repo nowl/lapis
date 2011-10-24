@@ -39,4 +39,5 @@
                               :render-func render-func :update-func update-func 
                               :message-handler-func message-handler-func)))
     (setf (gethash name (gamestate-objects-by-name *gamestate*))
-          go)))
+          go)
+    go))
