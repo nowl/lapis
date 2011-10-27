@@ -27,13 +27,19 @@
 
 (in-package :lapis-ffi)
 
+(pushnew #p"." cffi:*foreign-library-directories*)
+
+;; custom load directory for liblapis
+(when (boundp 'cl-user::*liblapis-dir*)
+  (pushnew cl-user::*liblapis-dir* cffi:*foreign-library-directories*))
+
 (load-foreign-library "libGL.so")
 (load-foreign-library "libGLU.so")
 (load-foreign-library "libSDL.so")
 (load-foreign-library "libSDL_mixer.so" :search-path #p"/usr/local/lib/")
 (load-foreign-library "libSDL_ttf.so")
 (load-foreign-library "libSDL_image.so")
-(load-foreign-library "liblapis.so" :search-path #p".")
+(load-foreign-library "liblapis.so")
 
 (defconstant +gl-points+ #x0)
 (defconstant +gl-lines+ #x1)
