@@ -110,6 +110,21 @@
   (eg :float)
   (eb :float))
 
+(defcfun ("image_loader_load" image-loader-load) :int
+  (alias :string)
+  (filename :string)
+  (x :int)
+  (y :int)
+  (width :int)
+  (height :int))
+
+(defcfun ("image_loader_bind" image-loader-bind) :void
+  (alias :string))
+
+(defcfun ("image_loader_unbind" image-loader-unbind) :void)
+
+(defcfun ("image_loader_cleanup" image-loader-cleanup) :void)
+
 (defun enable-smooth-lines ()
   (no-fp-traps
     (funcall #'lsdl-enable-smooth-lines)))

@@ -6,7 +6,9 @@ LIBS =
 
 SRCS = \
 	lapis.c \
-	sdl.c
+	sdl.c \
+	image_loader.c \
+	utils.c
 
 OBJS = $(SRCS:.c=.o)
 

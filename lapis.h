@@ -55,4 +55,24 @@ void lsdl_draw_point(float x, float y, float r, float g, float b);
 int       lapis_init();
 void      lapis_deinit();
 
+/* utils */
+void *memory_grow_to_size(void *mem_p,
+                          size_t per_block,
+                          size_t *mem_cap_ip,
+                          size_t mem_size_i);
+
+unsigned long lapis_hash(char *type);
+
+/* image_loader */
+int image_loader_load(char *alias,
+                      char *filename,
+                      int x,
+                      int y,
+                      int width,
+                      int height);
+
+GLuint image_loader_get(char *alias);
+
+void image_loader_cleanup();
+
 #endif  /* __LAPIS_H__ */
