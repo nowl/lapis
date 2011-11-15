@@ -165,3 +165,21 @@ lsdl_flip(engine_t * engine)
 {
     SDL_GL_SwapBuffers();
 }
+
+void
+lsdl_pre_render(engine_t *engine)
+{
+    if(engine->render_wrap_hook)
+        engine->render_wrap_hook(RW_PRE, engine->render_wrap_hook_data);
+    else
+        glPushMatrix();
+}
+
+void
+lsdl_post_render(engine_t *engine)
+{
+    if(engine->render_wrap_hook)
+        engine->render_wrap_hook(RW_POST, engine->render_wrap_hook_data);
+    else
+        glPopMatrix();
+}

@@ -40,10 +40,17 @@ typedef struct list list_t;
 typedef struct ref ref_t;
 typedef struct lapis_lua lapis_lua_t;
 
+enum render_wrap_type_e {
+    RW_PRE,
+    RW_POST
+};
+
 //typedef void (*message_callback_func)(game_object_t *sender, game_object_t *receiver, void *data);
 typedef void (*game_object_update_fn)(engine_t *engine, game_object_t *obj, unsigned int ticks);
 typedef void (*game_object_render_fn)(engine_t *engine, game_object_t *obj, float interpolation);
 typedef int  (*recv_callback_fn)(game_object_t *obj, message_t *mes);
+
+typedef void (*render_wrap_hook_fn)(enum render_wrap_type_e, void *data);
 
 struct ref
 {
@@ -149,6 +156,9 @@ struct engine
     //void *script_controller;
     //int (*script_update_call)(char *, game_manager *, game_object *, int);
     //int (*script_render_call)(char *, game_manager *, game_object *, float);
+
+    render_wrap_hook_fn  render_wrap_hook;
+    void                *render_wrap_hook_data;
 };
 
 struct sdl_graphics_context
@@ -176,6 +186,8 @@ void lsdl_draw_text(engine_t *engine,
                     char *text, int r, int g, int b,
                     int x, int y);
 void lsdl_flip(engine_t * manager);
+void lsdl_pre_render(engine_t *eng);
+void lsdl_post_render(engine_t *eng);
 void lsdl_prepare_render();
 
 /* lapis */
@@ -194,6 +206,7 @@ void      engine_handle_events(engine_t *gm);
 void      engine_update(engine_t *gm, unsigned int ticks);
 void      engine_render(engine_t *gm, float interpolation);
 void      engine_start(engine_t *gm);
+void      engine_set_render_wrap_hook(engine_t *engine, render_wrap_hook_fn fn, void *data);
 void      engine_quit(engine_t *gm);
 
 

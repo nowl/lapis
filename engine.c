@@ -8,6 +8,8 @@ engine_create()
     eng->is_running = TRUE;
     eng->state = NULL;
 	eng->fps = 0;
+    eng->render_wrap_hook = NULL;
+    eng->render_wrap_hook_data = NULL;
     return eng;
 }
 
@@ -62,3 +64,9 @@ engine_render(engine_t *eng, float interpolation)
 
 void engine_start(engine_t *eng) {}
 void engine_quit(engine_t *eng) {eng->is_running = FALSE;}
+
+void engine_set_render_wrap_hook(engine_t *engine, render_wrap_hook_fn fn, void *data)
+{
+    engine->render_wrap_hook = fn;
+    engine->render_wrap_hook_data = data;
+}

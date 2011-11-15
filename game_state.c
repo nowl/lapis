@@ -61,9 +61,7 @@ game_state_render(engine_t *eng, float interpolation)
     game_state_t *gs = eng->state;
 
     lsdl_free_font_surfaces();
-
-    lsdl_prepare_render();
-
+    
     int rl;                     /* render level */
     for(rl=0; rl<gs->num_render_levels; rl++)
     {
@@ -73,6 +71,8 @@ game_state_render(engine_t *eng, float interpolation)
             game_object_t *object = n->data;
             if(object && object->render_level == rl)
             {
+                lsdl_pre_render(eng);
+                
                 switch(object->render_callback.type)
                 {
                 case C_FUNC:
@@ -86,10 +86,12 @@ game_state_render(engine_t *eng, float interpolation)
                 default:
                     assert(FALSE);
                 }
+
+                lsdl_post_render(eng);
             }
         }
     }
-    
+
     lsdl_flip(eng);
 }
 
