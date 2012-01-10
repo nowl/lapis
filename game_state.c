@@ -61,6 +61,8 @@ game_state_render(engine_t *eng, float interpolation)
     game_state_t *gs = eng->state;
 
     lsdl_free_font_surfaces();
+
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     
     int rl;                     /* render level */
     for(rl=0; rl<gs->num_render_levels; rl++)
