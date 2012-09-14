@@ -3,7 +3,6 @@ CFLAGS = -Wall -g -O2 -I/usr/local/include/SDL -fPIC
 CFLAGS += -I/usr/include/lua5.1
 INCLUDES = $(shell sdl-config --cflags)
 LDFLAGS = -fPIC -shared
-LIBS =
 
 SRCS = \
 	engine.c \
@@ -12,7 +11,6 @@ SRCS = \
 	game_state.c \
 	sdl_graphics_context.c \
 	sdl_font.c \
-	sdl_sound.c \
 	game_object.c \
 	message.c \
 	mainloop.c \

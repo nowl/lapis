@@ -27,6 +27,15 @@
 # define TRUE (!FALSE)
 #endif
 
+#include "mempool.h"
+#include "mempool_ext.h"
+#include "entity.h"
+#include "component.h"
+#include "message.h"
+
+
+#if 0
+
 typedef struct engine engine_t;
 typedef struct sdl_graphics_context sdl_graphics_context_t;
 typedef struct bcast_recvr bcast_recvr_t;
@@ -34,7 +43,7 @@ typedef struct game_state game_state_t;
 typedef struct game_object game_object_t;
 typedef struct update_callback update_callback_t;
 typedef struct render_callback render_callback_t;
-typedef struct message message_t;
+//typedef struct message message_t;
 typedef struct aatree_node aatree_node_t;
 typedef struct list list_t;
 typedef struct ref ref_t;
@@ -48,7 +57,7 @@ enum render_wrap_type_e {
 //typedef void (*message_callback_func)(game_object_t *sender, game_object_t *receiver, void *data);
 typedef void (*game_object_update_fn)(engine_t *engine, game_object_t *obj, unsigned int ticks);
 typedef void (*game_object_render_fn)(engine_t *engine, game_object_t *obj, float interpolation);
-typedef int  (*recv_callback_fn)(game_object_t *obj, message_t *mes);
+//typedef int  (*recv_callback_fn)(game_object_t *obj, message_t *mes);
 
 typedef void (*render_wrap_hook_fn)(enum render_wrap_type_e, void *data);
 
@@ -73,12 +82,14 @@ struct aatree_node
     int             owns_data;
 };
 
+/*
 struct message
 {
     game_object_t *sender, *receiver;
     unsigned long type;
     ref_t *data;
 };
+*/
 
 struct bcast_recvr
 {
@@ -133,9 +144,9 @@ struct game_object
 
     update_callback_t   update_callback;
     render_callback_t   render_callback;
-    recv_callback_fn    recv_callback; /* message receive callback */
+    //recv_callback_fn    recv_callback; /* message receive callback */
     
-    message_t **messages;
+//    message_t **messages;
     size_t messages_len;
     size_t messages_cap;
 };
@@ -226,8 +237,8 @@ void           game_state_render(engine_t *, float interpolation);
 void           game_state_append_object(game_state_t *, game_object_t *);
 game_object_t* game_state_remove_object(game_state_t *, game_object_t *);
 void           game_state_append_bcast_recvr(game_state_t *state, game_object_t *obj, char *name);
-void           game_state_deliver_message_sync(game_state_t *state, message_t *message);
-void           game_state_deliver_message_async(game_state_t *state, message_t *message);
+//void           game_state_deliver_message_sync(game_state_t *state, message_t *message);
+//void           game_state_deliver_message_async(game_state_t *state, message_t *message);
 
 /* sdl_font */
 
@@ -249,8 +260,8 @@ void               game_object_destroy(engine_t *eng, game_object_t *go);
 game_object_t     *game_object_get_by_name(char *name);
 game_object_t     *game_object_remove(game_object_t *go);
 game_object_t     *game_object_remove_by_name(char *name);
-void               game_object_set_recv_callback_c_func(game_object_t *obj,
-                                                        recv_callback_fn callback);
+//void               game_object_set_recv_callback_c_func(game_object_t *obj,
+//                                                        recv_callback_fn callback);
 void               game_object_set_update_callback_c_func(game_object_t *obj,
                                                           const game_object_update_fn callback);
 void               game_object_set_update_callback_script_func(game_object_t *obj,
@@ -259,14 +270,16 @@ void               game_object_set_render_callback_c_func(game_object_t *obj,
                                                           const game_object_render_fn callback);
 void               game_object_set_render_callback_script_func(game_object_t *obj,
                                                                char * callback);
+/*
 void               game_object_append_message(game_object_t *obj,
                                               message_t *mes);
 void               game_object_clear_messages(game_object_t *obj);
 int                game_object_recv_mes(game_object_t *obj, message_t *mes);
 void               game_object_process_messages(game_object_t *obj);
+*/
 
 /* message */
-
+/*
 message_t * message_create(game_object_t            *sender,
                            game_object_t            *receiver,
                            char                     *type,
@@ -281,6 +294,7 @@ void        message_create_and_send(char  *sender,
                                     int    delivery_type);
 
 void        message_destroy(message_t               *message);
+*/
 
 /*
 message_t   message_construct(game_object_t         *sender,
@@ -298,7 +312,7 @@ enum
     ASYNC
 };
 
-void message_deliver(message_t *mes, int type);
+//void message_deliver(message_t *mes, int type);
 
 /* mainloop */
 
@@ -405,5 +419,6 @@ typedef int (*blocked_f)(int x, int y);
 typedef void (*set_visible_f)(int x, int y);
 
 void los_visibility(int origin_x, int origin_y, int depth, blocked_f get_blocked, set_visible_f set_vis);
+#endif
 
 #endif  /* __LAPIS_H__ */

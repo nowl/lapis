@@ -1,5 +1,5 @@
 #include "lapis.h"
-
+#if 0
 game_state_t *
 game_state_create(int id)
 {
@@ -106,7 +106,7 @@ game_state_update(engine_t *eng, unsigned int ticks)
         game_object_t *object = n->data;
         if(object)
         {
-            game_object_process_messages(object);
+//            game_object_process_messages(object);
 
             switch(object->update_callback.type)
             {
@@ -188,3 +188,4 @@ game_state_deliver_message_async(game_state_t *state, message_t *message)
 
     message_destroy(message);
 }
+#endif

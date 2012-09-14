@@ -1,5 +1,6 @@
 #include "lapis.h"
 
+#if 0
 static unsigned long global_id_counter = 0;
 
 static aatree_node_t *object_root = NULL;
@@ -156,3 +157,4 @@ game_object_process_messages(game_object_t *obj)
         game_object_recv_mes(obj, obj->messages[i]);
     game_object_clear_messages(obj);
 }
+#endif

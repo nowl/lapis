@@ -25,18 +25,6 @@ lapis_init()
         goto FAIL;
     }
     
-    if( Mix_Init(MIX_INIT_OGG) < 0 )
-    {
-        WARN("Unable to init MIX: %s\n", Mix_GetError());
-        goto FAIL;
-    }
-
-    Mix_AllocateChannels(16);
-    if( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1 ) {
-        WARN("Mix_OpenAudio error: %s\n", Mix_GetError());
-        goto FAIL;
-    }
-
     LOG("SDL initialization successful\n");
 
     /* initialize engine */
@@ -68,9 +56,6 @@ lapis_deinit()
     if(engine)
         engine_destroy(engine);
 
-    Mix_CloseAudio();
-
-    Mix_Quit();
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
