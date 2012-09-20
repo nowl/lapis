@@ -36,17 +36,16 @@ game_state_remove_object(game_state_t *gs, game_object_t *obj)
     game_object_t *go = n->data;
 
     /* remove object from bcast recvrs also */
-    list_t *a = list_first(gs->bcast_recvrs);
+    GSList *a = gs->bcast_recvrs;
     while(a)
     {
-        list_t *t = a->next;
+        GSList *t = a->next;
         
         bcast_recvr_t *br = a->data;
         if(br->obj == obj)
         {
             free(br);
-            gs->bcast_recvrs = list_remove(a);
-            list_destroy(a);
+            gs->bcast_recvrs = g_slist_delete_link(gs->bcast_recvrs, t);
         }
         
         a = t;

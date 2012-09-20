@@ -1,55 +1,45 @@
-CC = gcc
-CFLAGS = -Wall -g -O2 -I/usr/local/include/SDL -fPIC
-CFLAGS += -I/usr/include/lua5.1
-INCLUDES = $(shell sdl-config --cflags)
+CXX = g++
+CXXFLAGS = -Wall -g -O2 -fPIC -std=c++0x
+INCLUDES = $(shell pkg-config lua --cflags) $(shell sdl-config --cflags)
 LDFLAGS = -fPIC -shared
-LIBS =
 
-SRCS = \
-	engine.c \
-	utils.c \
-	lapis.c \
-	game_state.c \
-	sdl_graphics_context.c \
-	sdl_font.c \
-	sdl_sound.c \
-	game_object.c \
-	message.c \
-	mainloop.c \
-	image_loader.c \
-	image_render_set.c \
-	collide.c \
-	astar.c \
-	random.c \
-	aatree.c \
-	list.c \
-	ref.c \
-	lapis_wrap.c \
-	lua.c \
-	shadow_los.c
+LIBS = $(shell pkg-config lua --libs) $(shell sdl-config --libs)
 
-OBJS = $(SRCS:.c=.o)
+LIBSRCS = \
+	entity.cpp
 
-MAIN = liblapis.so
+EXECSRCS = \
+	test.cpp
 
+LIBOBJS = $(LIBSRCS:.cpp=.o)
+EXECOBJS = $(EXECSRCS:.cpp=.o)
 
-.SUFFIXES: .c .o .i
+MAINLIB = liblapis.so
+MAINEXEC = main
 
-.c.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+all: $(MAINLIB) $(MAINEXEC)
 
-.PHONY: depend clean
+.SUFFIXES: .cpp .o .i
 
-$(MAIN): $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(MAIN) $(OBJS) $(LDFLAGS) $(LIBS)
+.cpp.o:
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-lapis_wrap.c: lapis.i
-	swig -lua lapis.i
+.PHONY: depend clean all
+
+$(MAINLIB): $(LIBOBJS)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(MAINLIB) $(LIBOBJS) $(LDFLAGS)
+
+$(MAINEXEC): $(EXECOBJS)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(MAINEXEC) $(EXECOBJS) $(LIBS) -L. -llapis
+
+#lapis_wrap.c: lapis.i
+#	swig -lua lapis.i
 
 clean:
-	rm -f *.o *~ $(MAIN) lapis_wrap.c
+	rm -f *.o *~ $(MAINLIB) $(MAINEXEC)
+ #lapis_wrap.c
 
-depend: $(SRCS)
-	$(CC) -M $(CFLAGS) $(INCLUDES) $^ > $@
+depend: $(LIBSRCS) $(EXECSRCS)
+	$(CXX) -M $(CFLAGS) $(INCLUDES) $^ > $@
 
 include depend

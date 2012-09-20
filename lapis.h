@@ -13,6 +13,8 @@
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
 
+#include <glib.h>
+
 #ifdef NDEBUG
 # define LOG
 #else
@@ -36,7 +38,6 @@ typedef struct update_callback update_callback_t;
 typedef struct render_callback render_callback_t;
 typedef struct message message_t;
 typedef struct aatree_node aatree_node_t;
-typedef struct list list_t;
 typedef struct ref ref_t;
 typedef struct lapis_lua lapis_lua_t;
 
@@ -55,12 +56,6 @@ typedef void (*render_wrap_hook_fn)(enum render_wrap_type_e, void *data);
 struct ref
 {
     int count;
-    void *data;
-};
-
-struct list
-{
-    list_t *next, *prev;
     void *data;
 };
 
@@ -90,7 +85,7 @@ struct game_state
 {
     int            id;
     aatree_node_t *objects;
-    list_t        *bcast_recvrs;
+    GSList        *bcast_recvrs;
     int            num_render_levels;
 };
 
@@ -381,13 +376,6 @@ aatree_node_t *aatree_find(aatree_node_t *root, unsigned long hash);
 aatree_node_t *aatree_insert(aatree_node_t *T, aatree_node_t *n);
 aatree_node_t *aatree_delete(aatree_node_t *T, aatree_node_t *n);
 aatree_node_t *aatree_create(unsigned long hash, void *data, char owns_data);
-
-/* list */
-list_t *list_create(void *data);
-void    list_destroy(list_t *n);
-list_t *list_append(list_t* list, list_t *entry);
-list_t *list_remove(list_t* entry);
-list_t *list_first(list_t* list);
 
 /* ref */
 ref_t *ref_create(void * data);
