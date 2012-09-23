@@ -7,7 +7,8 @@ LIBS = $(shell sdl-config --libs) $(shell lua-config --libs) -lSDL_ttf -lSDL_ima
 
 LIBSRCS = \
 	entity.cpp \
-	sdl_driver.cpp
+	sdl_driver.cpp \
+	component.cpp
 
 EXECSRCS = \
 	test.cpp

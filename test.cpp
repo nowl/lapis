@@ -4,6 +4,7 @@
 #include "message.hpp"
 #include "sdl_driver.hpp"
 #include "engine.hpp"
+#include "component.hpp"
 
 class FloatPayload : public Message::IPayload
 {

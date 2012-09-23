@@ -1,7 +1,7 @@
 #ifndef __ENTITY_HPP__
 #define __ENTITY_HPP__
 
-#include <tr1/memory>
+#include <memory>
 #include <map>
 #include <string>
 
