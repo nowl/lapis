@@ -1,12 +1,13 @@
 CXX = g++
 CXXFLAGS = -Wall -g -O2 -fPIC -std=c++0x
-INCLUDES = $(shell pkg-config lua --cflags) $(shell sdl-config --cflags)
-LDFLAGS = -fPIC -shared
+INCLUDES = $(shell sdl-config --cflags) $(shell lua-config --include)
+LDFLAGS = -shared
 
-LIBS = $(shell pkg-config lua --libs) $(shell sdl-config --libs)
+LIBS = $(shell sdl-config --libs) $(shell lua-config --libs) -lSDL_ttf -lSDL_image -lSDL_mixer
 
 LIBSRCS = \
-	entity.cpp
+	entity.cpp \
+	sdl_driver.cpp
 
 EXECSRCS = \
 	test.cpp
@@ -27,10 +28,10 @@ all: $(MAINLIB) $(MAINEXEC)
 .PHONY: depend clean all
 
 $(MAINLIB): $(LIBOBJS)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(MAINLIB) $(LIBOBJS) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(MAINLIB) $(LIBOBJS) $(LDFLAGS) $(LIBS)
 
 $(MAINEXEC): $(EXECOBJS)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(MAINEXEC) $(EXECOBJS) $(LIBS) -L. -llapis
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(MAINEXEC) $(EXECOBJS) -L. -llapis -Wl,-rpath,'$$ORIGIN'
 
 #lapis_wrap.c: lapis.i
 #	swig -lua lapis.i
