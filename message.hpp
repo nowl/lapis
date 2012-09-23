@@ -33,30 +33,39 @@ public:
     static void send(Entity *source,
                      unsigned int type,
                      const T &payload,
-                     DeliveryType deliveryType)
-    {
-        if(deliveryType == ASYNC)
-        {
-            Message message;
-            message.source = source;
-            message.type = type;
-            message.payload = std::make_shared<T>(payload);
-            // process message here
-            //processMessage(&message);
-            //printf("sending async\n");
-        }
-        else                    // SYNC
-        {
-            auto message = std::make_shared<Message>();
-            message->source = source;
-            message->type = type;
-            message->payload = std::make_shared<T>(payload);
-            // add to process message list           
-            printf("sending sync\n");
-            messages.push_back(message);
-        }
-    }
+                     DeliveryType deliveryType);
 };
+
+template <class T>
+void Message::send(Entity *source,
+                   unsigned int type,
+                   const T &payload,
+                   DeliveryType deliveryType)
+{
+    if(deliveryType == ASYNC)
+    {
+        Message message;
+        message.source = source;
+        message.type = type;
+        message.payload = std::make_shared<T>(payload);
+        // process message here
+        //processMessage(&message);
+        //printf("sending async\n");
+    }
+    else                    // SYNC
+    {
+        auto message = std::make_shared<Message>();
+        message->source = source;
+        message->type = type;
+        message->payload = std::make_shared<T>(payload);
+        // add to process message list           
+        printf("sending sync\n");
+        messages.push_back(message);
+    }
+}
+
+
+
 
 /*
 class FloatPayload : public Message::IPayload

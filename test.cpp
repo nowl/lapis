@@ -2,6 +2,8 @@
 
 #include "entity.hpp"
 #include "message.hpp"
+#include "sdl_driver.hpp"
+#include "engine.hpp"
 
 class FloatPayload : public Message::IPayload
 {
@@ -26,8 +28,9 @@ void processMessage(Message *message)
 
 int main(int argc, char *argv[])
 {
-    float a = testing(14);
-    printf("%f\n", a);
+    Engine e;
+    //float a = testing(14);
+    //printf("%f\n", a);
    
     FloatPayload p;
     p.a = 24;

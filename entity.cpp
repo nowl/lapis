@@ -1,5 +1,15 @@
 #include "entity.hpp"
 
+std::shared_ptr<Entity::IMeta>
+Entity::getMeta(std::string val)
+{
+    if(_meta.find(val) == end(_meta))
+        return std::shared_ptr<IMeta>();
+    
+    return _meta[val];
+}
+
+/*
 class PositionMeta : public Entity::IMeta
 {
 public:
@@ -31,3 +41,4 @@ float testing(float b)
 
     return p->p2;
 }
+*/
