@@ -29,9 +29,11 @@ void processMessage(Message *message)
 
 int main(int argc, char *argv[])
 {
-    Engine e;
+    Engine::pointer e = Engine::Instance();
     //float a = testing(14);
     //printf("%f\n", a);
+    //const std::unique_ptr<SDLDriver>& sdl = e.getSDLDriver();
+    e->getSDLDriver();
    
     FloatPayload p;
     p.a = 24;

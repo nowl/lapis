@@ -1,24 +1,27 @@
 #ifndef __ENGINE_HPP__
 #define __ENGINE_HPP__
 
-#include <tr1/memory>
+#include <memory>
 
 class SDLDriver;
 
 class Engine
 {
 public:
-    Engine()
-        : _sdlDriver(new SDLDriver())
-    {}
+    typedef const std::unique_ptr<Engine>& pointer;
 
-    std::unique_ptr<SDLDriver>& getSDLDriver()
+    static pointer Instance();
+
+    const std::unique_ptr<SDLDriver>& getSDLDriver()
     {
         return _sdlDriver;
     }
 
 private:
+    Engine();
+
     std::unique_ptr<SDLDriver> _sdlDriver;
+    static std::unique_ptr<Engine> _instance;
 };
 
 #endif  // __ENGINE_HPP__
