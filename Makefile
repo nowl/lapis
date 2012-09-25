@@ -24,7 +24,11 @@ SRCS = \
 	ref.c \
 	lapis_wrap.c \
 	lua.c \
-	shadow_los.c
+	shadow_los.c \
+	component.c \
+	mempool.c \
+	mempool_ext.c \
+	hash.c
 
 OBJS = $(SRCS:.c=.o)
 

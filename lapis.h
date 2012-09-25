@@ -34,8 +34,6 @@
 #include "message.h"
 
 
-#if 0
-
 typedef struct engine engine_t;
 typedef struct sdl_graphics_context sdl_graphics_context_t;
 typedef struct bcast_recvr bcast_recvr_t;
@@ -305,13 +303,6 @@ message_t   message_construct(game_object_t         *sender,
 
 unsigned long lapis_hash(char *type);
 
-/* message deliver type */
-enum
-{
-    SYNC,
-    ASYNC
-};
-
 //void message_deliver(message_t *mes, int type);
 
 /* mainloop */
@@ -419,6 +410,5 @@ typedef int (*blocked_f)(int x, int y);
 typedef void (*set_visible_f)(int x, int y);
 
 void los_visibility(int origin_x, int origin_y, int depth, blocked_f get_blocked, set_visible_f set_vis);
-#endif
 
 #endif  /* __LAPIS_H__ */

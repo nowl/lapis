@@ -10,7 +10,7 @@ game_object_create(char *name, void *data)
 {
     game_object_t *obj = malloc(sizeof(*obj));
     obj->id = global_id_counter++;
-    obj->name = lapis_hash(name);
+    //obj->name = lapis_hash(name);
     obj->render_level = 0;
     obj->data = data;
 	obj->image = NULL;
@@ -24,8 +24,8 @@ game_object_create(char *name, void *data)
     obj->messages_cap = 0;
 
     /* cache object */
-    aatree_node_t *obj_node = aatree_create(lapis_hash(name), obj, 0);
-    object_root = aatree_insert(object_root, obj_node);
+    //aatree_node_t *obj_node = aatree_create(lapis_hash(name), obj, 0);
+    //object_root = aatree_insert(object_root, obj_node);
 
     return obj;
 }
@@ -53,10 +53,10 @@ game_object_destroy(engine_t *eng, game_object_t *go)
 game_object_t *
 game_object_get_by_name(char *name)
 {
-    unsigned long hash = lapis_hash(name);
-    aatree_node_t *n = aatree_find(object_root, hash);
-    if(!n) return NULL;
-    return n->data;
+    //unsigned long hash = lapis_hash(name);
+    //aatree_node_t *n = aatree_find(object_root, hash);
+    //if(!n) return NULL;
+    //return n->data;
         
 }
 
@@ -72,10 +72,12 @@ game_object_remove(game_object_t *go)
 game_object_t *
 game_object_remove_by_name(char *name)
 {
+    /*
     aatree_node_t *n = aatree_find(object_root, lapis_hash(name));
     if(!n) return NULL;
     object_root = aatree_delete(object_root, n);    
     return n->data;
+    */
 }
 
 void

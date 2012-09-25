@@ -26,7 +26,7 @@ void message_send(int type,
     m->source = source;
     memcpy(m->payload, payload, payload_size);
 
-    if(del_type == ASYNC)
+    if(del_type == MDT_ASYNC)
         process_message(m);
     else
         LL_APPEND(messages, m);

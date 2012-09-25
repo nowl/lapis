@@ -50,16 +50,19 @@ void
 engine_update(engine_t *eng, unsigned int ticks)
 {
     eng->tick = ticks;
-    
+    /*
     if(eng->state)
         game_state_update(eng, ticks);
+    */
 }
 
 void
 engine_render(engine_t *eng, float interpolation)
 {
+    /*
     if(eng->state)
         game_state_render(eng, interpolation);
+    */
 }
 
 void engine_start(engine_t *eng) {}

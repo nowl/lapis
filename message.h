@@ -14,8 +14,8 @@ struct message
 
 enum message_del_type
 {
-    SYNC,
-    ASYNC
+    MDT_SYNC,
+    MDT_ASYNC
 };
 
 void message_send(int type, struct entity *source, void *payload, size_t payload_size, enum message_del_type del_type);
