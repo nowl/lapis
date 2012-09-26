@@ -4,7 +4,14 @@
 #include <SDL_ttf.h>
 
 #include "sdl_driver.hpp"
+#include "hash.hpp"
 #include "log.hpp"
+
+class SDLEventPayload : public Message::IPayload
+{
+public:
+    SDL_Event event;
+};
 
 SDLDriver::SDLDriver()
 {
@@ -37,4 +44,35 @@ SDLDriver::~SDLDriver()
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
+}
+
+std::unique_ptr<SDLDriver> SDLDriver::_instance = nullptr;
+
+const std::unique_ptr<SDLDriver>&
+SDLDriver::Instance()
+{
+    if( !_instance )
+        _instance = std::unique_ptr<SDLDriver>(new SDLDriver());
+    
+    return _instance;
+}
+
+unsigned long SDLDriver::getTick() const
+{
+    return SDL_GetTicks();
+}
+
+void SDLDriver::handleEvents()
+{
+    // message processing loop
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+        SDLEventPayload payload;
+        payload.event = event;
+        Message::send(NULL,
+                      Hash::hashString("sdl-event"),
+                      payload,
+                      Message::ASYNC);
+    }
 }

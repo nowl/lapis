@@ -9,7 +9,9 @@ LIBSRCS = \
 	entity.cpp \
 	sdl_driver.cpp \
 	component.cpp \
-	engine.cpp
+	engine.cpp \
+	message.cpp \
+	hash.cpp
 
 EXECSRCS = \
 	test.cpp
@@ -43,6 +45,6 @@ clean:
  #lapis_wrap.c
 
 depend: $(LIBSRCS) $(EXECSRCS)
-	$(CXX) -M $(CFLAGS) $(INCLUDES) $^ > $@
+	$(CXX) -M $(CXXFLAGS) $(INCLUDES) $^ > $@
 
 include depend

@@ -7,12 +7,15 @@
 #include <vector>
 
 #include "noncopyable.hpp"
+#include "component.hpp"
 
 class Entity;
 class Message;
 
 // maintains list of messages to queue up for synchronous processing
-std::vector< std::shared_ptr<Message> > messages;
+extern std::vector< std::shared_ptr<Message> > messages;
+
+void processMessage(Message *message);
 
 class Message : private noncopyable
 {
@@ -49,8 +52,8 @@ void Message::send(Entity *source,
         message.type = type;
         message.payload = std::make_shared<T>(payload);
         // process message here
-        //processMessage(&message);
-        //printf("sending async\n");
+        processMessage(&message);
+        printf("sending async\n");
     }
     else                    // SYNC
     {
@@ -66,7 +69,6 @@ void Message::send(Entity *source,
 
 
 
-
 /*
 class FloatPayload : public Message::IPayload
 {
@@ -79,15 +81,6 @@ void callFunction(std::function< void(std::string) > f)
     f("haha");
 }
 
-void processMessage(Message *message)
-{
-    printf("processing message of type %d\n", message->type);
-    auto p = std::static_pointer_cast<FloatPayload>(message->payload);
-    //printf("float payload of %f\n", p->a);
-
-    auto func = [&] (std::string str) {printf("float %s payload of %f\n", str.c_str(), p->a); };
-    callFunction(func);
-}
 
 int main()
 {

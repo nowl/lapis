@@ -8,20 +8,22 @@ class SDLDriver;
 class Engine
 {
 public:
-    typedef const std::unique_ptr<Engine>& pointer;
-
-    static pointer Instance();
-
-    const std::unique_ptr<SDLDriver>& getSDLDriver()
-    {
-        return _sdlDriver;
-    }
-
-private:
     Engine();
 
-    std::unique_ptr<SDLDriver> _sdlDriver;
-    static std::unique_ptr<Engine> _instance;
+    const std::unique_ptr<SDLDriver>& getSDLDriver() const;
+
+    unsigned long getTick() const;
+
+    // starts the engine mainloop
+    void run();
+
+    bool isRunning() const;
+
+private:
+    const std::unique_ptr<SDLDriver>& _sdlDriver;
+    bool _isRunning;
+
+    void handleEvents();
 };
 
 #endif  // __ENGINE_HPP__
