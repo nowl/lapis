@@ -5,30 +5,12 @@ INCLUDES = $(shell sdl-config --cflags)
 LDFLAGS = -fPIC -shared
 
 SRCS = \
-	engine.c \
-	utils.c \
-	lapis.c \
-	game_state.c \
-	sdl_graphics_context.c \
-	sdl_font.c \
-	game_object.c \
 	message.c \
-	mainloop.c \
-	image_loader.c \
-	image_render_set.c \
-	collide.c \
-	astar.c \
-	random.c \
-	aatree.c \
-	list.c \
-	ref.c \
-	lapis_wrap.c \
-	lua.c \
-	shadow_los.c \
-	component.c \
 	mempool.c \
 	mempool_ext.c \
-	hash.c
+	hash.c \
+	component.c \
+	entity.c
 
 OBJS = $(SRCS:.c=.o)
 
