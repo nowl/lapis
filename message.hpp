@@ -29,19 +29,19 @@ public:
     };
 
     Entity *source;
-    unsigned int type;
+    unsigned long type;
     std::shared_ptr<IPayload> payload;
 
     template <class T>
     static void send(Entity *source,
-                     unsigned int type,
+                     unsigned long type,
                      const T &payload,
                      DeliveryType deliveryType);
 };
 
 template <class T>
 void Message::send(Entity *source,
-                   unsigned int type,
+                   unsigned long type,
                    const T &payload,
                    DeliveryType deliveryType)
 {
@@ -53,7 +53,6 @@ void Message::send(Entity *source,
         message.payload = std::make_shared<T>(payload);
         // process message here
         processMessage(&message);
-        printf("sending async\n");
     }
     else                    // SYNC
     {

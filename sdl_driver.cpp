@@ -1,17 +1,6 @@
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_mixer.h>
-#include <SDL_ttf.h>
-
 #include "sdl_driver.hpp"
 #include "hash.hpp"
 #include "log.hpp"
-
-class SDLEventPayload : public Message::IPayload
-{
-public:
-    SDL_Event event;
-};
 
 SDLDriver::SDLDriver()
 {
@@ -71,8 +60,53 @@ void SDLDriver::handleEvents()
         SDLEventPayload payload;
         payload.event = event;
         Message::send(NULL,
-                      Hash::hashString("sdl-event"),
+                      Hash::hashString("ui-event"),
                       payload,
                       Message::ASYNC);
     }
+}
+
+void SDLDriver::setVideoMode(unsigned int width,
+                             unsigned int height,
+                             int extra_flags)
+{
+    SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+
+    int flags = SDL_OPENGL;
+    /*
+    if(fullscreen)
+        flags |= SDL_FULLSCREEN;
+    if(resizable)
+        flags |= SDL_RESIZABLE;
+    */
+    
+    _screen = SDL_SetVideoMode(width, height, 16, flags | extra_flags);
+    /*
+    if ( !screen )
+    {
+        LOG("Unable to set video mode: %s\n", SDL_GetError());
+        exit(1);
+    }
+    */
+
+    /* gl setup */
+
+    //glShadeModel( GL_SMOOTH );
+
+    //glCullFace( GL_BACK );
+    //glFrontFace( GL_CCW );
+    //glEnable( GL_CULL_FACE );
+
+    glClearColor( 0, 0, 0, 0 );
+    glViewport( 0, 0, width, height );
+
+    glMatrixMode( GL_PROJECTION );
+    glLoadIdentity( );
+    glOrtho(0, width, height, 0, 0, 1);
+
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);  
 }

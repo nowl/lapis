@@ -16,6 +16,7 @@ public:
 
     // starts the engine mainloop
     void run();
+    void quit();
 
     bool isRunning() const;
 

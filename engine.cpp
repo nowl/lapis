@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "engine.hpp"
 #include "sdl_driver.hpp"
 #include "log.hpp"
@@ -40,10 +42,12 @@ void Engine::run()
 	unsigned long game_tick = 0;
 	unsigned long fps_start_time = getTick();
     
-    //while ( isRunning() )
-    while(fps_start_time < 100)
+    while ( isRunning() )
     {
         handleEvents();
+
+        fps_start_time = getTick();
+        
 /*
 
         int loops = 0;
@@ -69,8 +73,12 @@ void Engine::run()
             //LOG("fps = %d\n", eng->fps);
 		}
     */
-        _isRunning = false;
     }
     
     LOG("stopping engine\n");
+}
+
+void Engine::quit()
+{
+    _isRunning = false;
 }

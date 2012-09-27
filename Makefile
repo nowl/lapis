@@ -3,7 +3,7 @@ CXXFLAGS = -Wall -g -O2 -fPIC -std=c++0x
 INCLUDES = $(shell sdl-config --cflags) $(shell lua-config --include)
 LDFLAGS = -shared
 
-LIBS = $(shell sdl-config --libs) $(shell lua-config --libs) -lSDL_ttf -lSDL_image -lSDL_mixer
+LIBS = $(shell sdl-config --libs) $(shell lua-config --libs) -lSDL_ttf -lSDL_image -lSDL_mixer -lGL -lGLU
 
 LIBSRCS = \
 	entity.cpp \

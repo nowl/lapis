@@ -1,3 +1,5 @@
+#include <SDL.h>
+
 #include <cstdio>
 
 #include "entity.hpp"
@@ -6,6 +8,9 @@
 #include "engine.hpp"
 #include "component.hpp"
 #include "log.hpp"
+#include "hash.hpp"
+
+static Engine engine;
 
 class FloatPayload : public Message::IPayload
 {
@@ -32,15 +37,21 @@ void processMessage(Message *message)
 
 bool comp1_responder(Message *message, Entity *entity)
 {
-    //auto p = std::static_pointer_cast<FloatPayload>(message->payload);
+    if(message->type == Hash::hashString("ui-event"))
+    {
+        auto p = std::static_pointer_cast<SDLEventPayload>(message->payload);
+        
+        if(p->event.type == SDL_QUIT ||
+           (p->event.type == SDL_KEYDOWN && p->event.key.keysym.sym == SDLK_q))
+            engine.quit();        
+    }
 
-    LOG("here\n");
     return false;
 }
 
 int main(int argc, char *argv[])
 {
-    Engine e;
+    engine.getSDLDriver()->setVideoMode(1024, 768);
     //float a = testing(14);
     //printf("%f\n", a);
     //const std::unique_ptr<SDLDriver>& sdl = e.getSDLDriver();
@@ -51,9 +62,9 @@ int main(int argc, char *argv[])
     //Message::send<FloatPayload>(NULL, 4, p, Message::ASYNC);
 
     Component comp1(comp1_responder);
-    comp1.addResponderType("sdl-event");
+    comp1.addResponderType("ui-event");
 
-    e.run();
+    engine.run();
 
     return 0;
 }
