@@ -64,6 +64,9 @@ int main(int argc, char *argv[])
     Component comp1(comp1_responder);
     comp1.addResponderType("ui-event");
 
+    Entity ent1;
+    comp1.addEntity(&ent1);
+
     engine.run();
 
     return 0;

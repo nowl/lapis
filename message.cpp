@@ -7,6 +7,10 @@ void processMessage(Message *message)
     auto components = Component::responderList[message->type];
     for(auto iter = components.begin(); iter != components.end(); ++iter)
     {
-        (*iter)->respond(message, NULL);
+        if((*iter)->respond(message))
+        {
+            // exit early if event is consumed
+            return;
+        }
     }
 }
