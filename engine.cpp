@@ -3,10 +3,18 @@
 #include "engine.hpp"
 #include "sdl_driver.hpp"
 #include "log.hpp"
+#include "payloads_generic.hpp"
+
+const char *Engine::UIEVENT_MESSAGE = "__UI_EVENT__";
+const char *Engine::UPDATE_MESSAGE = "__UPDATE_MESSAGE__";
+const char *Engine::RENDER_MESSAGE = "__RENDER_MESSAGE__";
 
 Engine::Engine()
     : _sdlDriver(SDLDriver::Instance()),
-      _isRunning(false)
+      _isRunning(false),
+      _framesPerSecond(0),
+      _msPerTick(1000/20),
+      _maxFrameSkip(5)
 {}
 
 const std::unique_ptr<SDLDriver>&
@@ -44,35 +52,31 @@ void Engine::run()
     
     while ( isRunning() )
     {
-        handleEvents();
+        handleEvents();        
 
-        fps_start_time = getTick();
-        
-/*
-
-        int loops = 0;
-        unsigned int tick = lsdl_get_tick();
-        while(tick > next_game_tick && loops < max_frame_skip)
+        unsigned int loops = 0;
+        unsigned int tick = getTick();
+        while(tick > next_game_tick && loops < _maxFrameSkip)
         {
-            engine_update(eng, game_tick++);
-            next_game_tick += time_per_tick;
+            update(game_tick++);
+            next_game_tick += _msPerTick;
             loops++;
 
-            tick = lsdl_get_tick();
+            tick = getTick();
         }
 
-        float interpolation = (tick + time_per_tick - next_game_tick)/time_per_tick;
-        engine_render(eng, interpolation);
+        float interpolation = (float)(tick + _msPerTick - next_game_tick)/_msPerTick;
+        render(interpolation);
 
 		++fps_counter;
-		if(lsdl_get_tick() - fps_start_time > 1000)
+		if(getTick() - fps_start_time > 1000)
 		{
-            eng->fps = fps_counter;
+            _framesPerSecond = fps_counter;
 			fps_counter = 0;
-			fps_start_time = lsdl_get_tick();
-            //LOG("fps = %d\n", eng->fps);
+			fps_start_time = getTick();
+
+            LOG("fps = %d\n", _framesPerSecond);
 		}
-    */
     }
     
     LOG("stopping engine\n");
@@ -81,4 +85,32 @@ void Engine::run()
 void Engine::quit()
 {
     _isRunning = false;
+}
+
+void Engine::setMSPerTick(unsigned int msPerTick)
+{
+    _msPerTick = msPerTick;
+}
+
+void Engine::setMaxFrameSkip(unsigned int maxFrameSkip)
+{
+    _maxFrameSkip = maxFrameSkip;
+}
+
+void Engine::update(unsigned long gameTick)
+{
+    auto payload = IntPayload(gameTick);
+    Message::send(NULL,
+                  UPDATE_MESSAGE,
+                  payload,
+                  Message::ASYNC);
+}
+
+void Engine::render(float interpolation)
+{
+    auto payload = FloatPayload(interpolation);
+    Message::send(NULL,
+                  RENDER_MESSAGE,
+                  payload,
+                  Message::ASYNC);
 }

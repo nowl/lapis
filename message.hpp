@@ -8,6 +8,7 @@
 
 #include "noncopyable.hpp"
 #include "component.hpp"
+#include "hash.hpp"
 
 class Entity;
 class Message;
@@ -34,10 +35,25 @@ public:
 
     template <class T>
     static void send(Entity *source,
+                     const char *type,
+                     const T &payload,
+                     DeliveryType deliveryType);
+
+    template <class T>
+    static void send(Entity *source,
                      unsigned long type,
                      const T &payload,
                      DeliveryType deliveryType);
 };
+
+template <class T>
+void Message::send(Entity *source,
+                   const char *type,
+                   const T &payload,
+                   DeliveryType deliveryType)
+{
+    send<T>(source, Hash::hashString(type), payload, deliveryType);
+}
 
 template <class T>
 void Message::send(Entity *source,

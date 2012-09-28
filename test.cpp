@@ -37,13 +37,17 @@ void processMessage(Message *message)
 
 bool comp1_responder(Message *message, Entity *entity)
 {
-    if(message->type == Hash::hashString("ui-event"))
+    if(message->type == Hash::hashString(Engine::UIEVENT_MESSAGE))
     {
         auto p = std::static_pointer_cast<SDLEventPayload>(message->payload);
         
         if(p->event.type == SDL_QUIT ||
-           (p->event.type == SDL_KEYDOWN && p->event.key.keysym.sym == SDLK_q))
+           (p->event.type == SDL_KEYDOWN && p->event.key.keysym.sym == SDLK_ESCAPE))
             engine.quit();        
+    }
+    else if(message->type == Hash::hashString(Engine::UPDATE_MESSAGE))
+    {
+        LOG("received update message for entity %p\n", entity);
     }
 
     return false;
@@ -62,7 +66,8 @@ int main(int argc, char *argv[])
     //Message::send<FloatPayload>(NULL, 4, p, Message::ASYNC);
 
     Component comp1(comp1_responder);
-    comp1.addResponderType("ui-event");
+    comp1.addResponderType(Engine::UIEVENT_MESSAGE);
+    comp1.addResponderType(Engine::UPDATE_MESSAGE);
 
     Entity ent1;
     comp1.addEntity(&ent1);

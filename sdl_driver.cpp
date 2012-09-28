@@ -1,5 +1,6 @@
 #include "sdl_driver.hpp"
 #include "hash.hpp"
+#include "engine.hpp"
 #include "log.hpp"
 
 SDLDriver::SDLDriver()
@@ -60,7 +61,7 @@ void SDLDriver::handleEvents()
         SDLEventPayload payload;
         payload.event = event;
         Message::send(NULL,
-                      Hash::hashString("ui-event"),
+                      Engine::UIEVENT_MESSAGE,
                       payload,
                       Message::ASYNC);
     }
