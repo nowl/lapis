@@ -4,6 +4,7 @@
 #include "sdl_driver.hpp"
 #include "log.hpp"
 #include "payloads_generic.hpp"
+#include "image_loader.hpp"
 
 const char *Engine::UIEVENT_MESSAGE = "__UI_EVENT__";
 const char *Engine::UPDATE_MESSAGE = "__UPDATE_MESSAGE__";
@@ -11,21 +12,28 @@ const char *Engine::RENDER_MESSAGE = "__RENDER_MESSAGE__";
 
 Engine::Engine()
     : _sdlDriver(SDLDriver::Instance()),
+      _imageLoader( new ImageLoader() ),
       _isRunning(false),
       _framesPerSecond(0),
       _msPerTick(1000/20),
       _maxFrameSkip(5)
 {}
 
-const std::unique_ptr<SDLDriver>&
-Engine::getSDLDriver() const
+SDLDriver*
+Engine::getSDLDriver()
 {
-    return _sdlDriver;
+    return _sdlDriver.get();
+}
+
+ImageLoader*
+Engine::getImageLoader()
+{
+    return _imageLoader.get();
 }
 
 unsigned long Engine::getTick() const
 {
-    return getSDLDriver()->getTick();
+    return _sdlDriver->getTick();
 }
 
 bool Engine::isRunning() const

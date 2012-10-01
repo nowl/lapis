@@ -4,6 +4,7 @@
 #include <memory>
 
 class SDLDriver;
+class ImageLoader;
 
 class Engine
 {
@@ -14,7 +15,8 @@ public:
 
     Engine();
 
-    const std::unique_ptr<SDLDriver>& getSDLDriver() const;
+    SDLDriver* getSDLDriver();
+    ImageLoader* getImageLoader();
 
     unsigned long getTick() const;
 
@@ -32,6 +34,7 @@ public:
 
 private:
     const std::unique_ptr<SDLDriver>& _sdlDriver;
+    const std::unique_ptr<ImageLoader> _imageLoader;
     bool _isRunning;
     int _framesPerSecond;
     unsigned int _msPerTick;

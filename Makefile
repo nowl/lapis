@@ -11,7 +11,8 @@ LIBSRCS = \
 	component.cpp \
 	engine.cpp \
 	message.cpp \
-	hash.cpp
+	hash.cpp \
+	image_loader.cpp
 
 EXECSRCS = \
 	test.cpp

@@ -5,6 +5,7 @@
 #include "entity.hpp"
 #include "message.hpp"
 #include "sdl_driver.hpp"
+#include "image_loader.hpp"
 #include "engine.hpp"
 #include "component.hpp"
 #include "log.hpp"
@@ -64,6 +65,9 @@ int main(int argc, char *argv[])
     //p.a = 24;
 
     //Message::send<FloatPayload>(NULL, 4, p, Message::ASYNC);
+
+    engine.getImageLoader()->load("test", "../ztrap/charset.png", 10, 10, 32, 32);
+    engine.getImageLoader()->get("test");
 
     Component comp1(comp1_responder);
     comp1.addResponderType(Engine::UIEVENT_MESSAGE);
