@@ -1,12 +1,11 @@
 CXX = g++
 CXXFLAGS = -Wall -g -O2 -fPIC -std=c++0x -DNOCLEANUP
-INCLUDES = $(shell sdl-config --cflags) $(shell lua-config --include)
+INCLUDES = $(shell sdl-config --cflags)
 LDFLAGS = -shared
 
-LIBS = $(shell sdl-config --libs) $(shell lua-config --libs) -lSDL_ttf -lSDL_image -lSDL_mixer -lGL -lGLU
+LIBS = $(shell sdl-config --libs) -lSDL_ttf -lSDL_image -lSDL_mixer -lGL -lGLU
 
 LIBSRCS = \
-	entity.cpp \
 	sdl_driver.cpp \
 	component.cpp \
 	engine.cpp \

@@ -21,6 +21,8 @@ SDLDriver::SDLDriver()
     if( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1 )
         WARN("Mix_OpenAudio error: %s\n", Mix_GetError());
     
+    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+
     LOG("SDL initialization successful\n");
 }
 
