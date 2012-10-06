@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -g -O2 -fPIC -std=c++0x
+CXXFLAGS = -Wall -g -O2 -fPIC -std=c++0x -DNOCLEANUP
 INCLUDES = $(shell sdl-config --cflags) $(shell lua-config --include)
 LDFLAGS = -shared
 
@@ -14,16 +14,11 @@ LIBSRCS = \
 	hash.cpp \
 	image_loader.cpp
 
-EXECSRCS = \
-	test.cpp
-
 LIBOBJS = $(LIBSRCS:.cpp=.o)
-EXECOBJS = $(EXECSRCS:.cpp=.o)
 
 MAINLIB = liblapis.so
-MAINEXEC = main
 
-all: $(MAINLIB) $(MAINEXEC)
+all: $(MAINLIB)
 
 .SUFFIXES: .cpp .o .i
 
@@ -35,17 +30,14 @@ all: $(MAINLIB) $(MAINEXEC)
 $(MAINLIB): $(LIBOBJS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(MAINLIB) $(LIBOBJS) $(LDFLAGS) $(LIBS)
 
-$(MAINEXEC): $(EXECOBJS)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(MAINEXEC) $(EXECOBJS) -L. -llapis -Wl,-rpath,'$$ORIGIN'
-
 #lapis_wrap.c: lapis.i
 #	swig -lua lapis.i
 
 clean:
-	rm -f *.o *~ $(MAINLIB) $(MAINEXEC)
+	rm -f *.o *~ $(MAINLIB)
  #lapis_wrap.c
 
-depend: $(LIBSRCS) $(EXECSRCS)
+depend: $(LIBSRCS)
 	$(CXX) -M $(CXXFLAGS) $(INCLUDES) $^ > $@
 
 include depend

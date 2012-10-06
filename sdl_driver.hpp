@@ -23,6 +23,10 @@ public:
 
     unsigned long getTick() const;
 
+    void preRender();
+    void postRender();
+    void drawImage(GLuint texture, float x, float y, float w, float h, float r, float g, float b);
+
     void handleEvents();
 
 private:    

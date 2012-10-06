@@ -26,6 +26,7 @@ SDLDriver::SDLDriver()
 
 SDLDriver::~SDLDriver()
 {
+#ifndef NOCLEANUP
     LOG("shutting down SDL\n");
     
     Mix_CloseAudio();
@@ -34,6 +35,7 @@ SDLDriver::~SDLDriver()
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
+#endif
 }
 
 std::unique_ptr<SDLDriver> SDLDriver::_instance = nullptr;
@@ -109,5 +111,43 @@ void SDLDriver::setVideoMode(unsigned int width,
     glOrtho(0, width, height, 0, 0, 1);
 
     glDisable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);  
+    //glEnable(GL_TEXTURE_2D);
+}
+
+
+void
+SDLDriver::drawImage(GLuint texture, float x, float y, float w, float h, float r, float g, float b)
+{
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glColor3f(r, g, b);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0, 0);
+    glVertex2f(x, y);
+    glTexCoord2f(1, 0);
+    glVertex2f(x+w, y);
+    glTexCoord2f(1, 1);
+    glVertex2f(x+w, y+h);
+    glTexCoord2f(0, 1);
+    glVertex2f(x, y+h);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void
+SDLDriver::preRender()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glMatrixMode( GL_MODELVIEW );
+    glLoadIdentity( );
+}
+
+void
+SDLDriver::postRender()
+{
+    SDL_GL_SwapBuffers();
 }
