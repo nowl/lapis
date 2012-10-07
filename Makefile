@@ -11,7 +11,8 @@ LIBSRCS = \
 	engine.cpp \
 	message.cpp \
 	hash.cpp \
-	image_loader.cpp
+	image_loader.cpp \
+	random.cpp
 
 LIBOBJS = $(LIBSRCS:.cpp=.o)
 

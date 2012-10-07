@@ -1,14 +1,12 @@
 #include <algorithm>
 
 #include "component.hpp"
-#include "entity.hpp"
 #include "message.hpp"
 #include "hash.hpp"
 
 Component::ResponderListType Component::responderList;
 
-Component::Component(ResponderFunc func)
-    : _responderFunc(func)
+Component::Component()
 {}
 
 Component::~Component()
@@ -20,20 +18,6 @@ Component::~Component()
                     iter->second.end(),
                     this);
     }
-}
-
-bool
-Component::respond(Message *message)
-{
-    auto iter = _entities.begin();
-    for(; iter != _entities.end(); ++iter)
-    {
-        bool result = _responderFunc(message, *iter);
-        if(result)
-            return true;
-    }
-    
-    return false;
 }
 
 void Component::addResponderType(std::string type)
@@ -48,16 +32,4 @@ void Component::removeResponderType(std::string type)
     std::remove(responderList[hash].begin(),
                 responderList[hash].end(),
                 this);
-}
-
-void Component::addEntity(Entity *entity)
-{
-    _entities.push_back(entity);
-}
-
-void Component::removeEntity(Entity *entity)
-{
-    std::remove(_entities.begin(),
-                _entities.end(),
-                entity);
 }

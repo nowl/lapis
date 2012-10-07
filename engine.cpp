@@ -5,6 +5,7 @@
 #include "log.hpp"
 #include "payloads_generic.hpp"
 #include "image_loader.hpp"
+#include "random.hpp"
 
 const char *Engine::UIEVENT_MESSAGE = "__UI_EVENT__";
 const char *Engine::UPDATE_MESSAGE = "__UPDATE_MESSAGE__";
@@ -17,7 +18,9 @@ Engine::Engine()
       _framesPerSecond(0),
       _msPerTick(1000/20),
       _maxFrameSkip(5)
-{}
+{
+    Random::init();
+}
 
 SDLDriver*
 Engine::getSDLDriver()

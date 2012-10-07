@@ -8,30 +8,20 @@
 #include <unordered_map>
 
 class Message;
-class Entity;
 
 class Component {
 public:
-    typedef std::function< bool(Message *message, Entity *entity) > ResponderFunc;
-    
-    Component(ResponderFunc func);
-    ~Component();
+    Component();
+    virtual ~Component();
     // TODO: add copy and assignment op
     
-    bool respond(Message *message);
+    virtual bool respond(Message *message) = 0;
 
     void addResponderType(std::string type);
     void removeResponderType(std::string type);
 
-    void addEntity(Entity *entity);
-    void removeEntity(Entity *entity);
-    
     typedef std::unordered_map<unsigned long, std::vector<Component*> > ResponderListType;
     static ResponderListType responderList;
-
-private:
-    ResponderFunc _responderFunc;
-    std::vector<Entity*> _entities;
 };
 
 #endif  // __COMPONENT_HPP__
