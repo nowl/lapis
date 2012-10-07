@@ -36,9 +36,8 @@ private:
     SDL_Surface *_screen;
 };
 
-class SDLEventPayload : public Message::IPayload
+struct SDLEventPayload : public Message::IPayload
 {
-public:
     SDL_Event event;
 };
 

@@ -10,7 +10,6 @@
 #include "component.hpp"
 #include "hash.hpp"
 
-class Entity;
 class Message;
 
 // maintains list of messages to queue up for synchronous processing
@@ -29,42 +28,36 @@ public:
         virtual ~IPayload() {};
     };
 
-    Entity *source;
     unsigned long type;
     std::shared_ptr<IPayload> payload;
 
     template <class T>
-    static void send(Entity *source,
-                     const char *type,
+    static void send(const char *type,
                      const T &payload,
                      DeliveryType deliveryType);
 
     template <class T>
-    static void send(Entity *source,
-                     unsigned long type,
+    static void send(unsigned long type,
                      const T &payload,
                      DeliveryType deliveryType);
 };
 
 template <class T>
-void Message::send(Entity *source,
-                   const char *type,
+void Message::send(const char *type,
                    const T &payload,
                    DeliveryType deliveryType)
 {
-    send<T>(source, Hash::hashString(type), payload, deliveryType);
+    send<T>(Hash::hashString(type), payload, deliveryType);
 }
 
 template <class T>
-void Message::send(Entity *source,
-                   unsigned long type,
+void Message::send(unsigned long type,
                    const T &payload,
                    DeliveryType deliveryType)
 {
     if(deliveryType == ASYNC)
     {
         Message message;
-        message.source = source;
         message.type = type;
         message.payload = std::make_shared<T>(payload);
         // process message here
@@ -73,7 +66,6 @@ void Message::send(Entity *source,
     else                    // SYNC
     {
         auto message = std::make_shared<Message>();
-        message->source = source;
         message->type = type;
         message->payload = std::make_shared<T>(payload);
         // add to process message list           
@@ -81,31 +73,5 @@ void Message::send(Entity *source,
         messages.push_back(message);
     }
 }
-
-
-
-/*
-class FloatPayload : public Message::IPayload
-{
-public:
-    float a;
-};
-
-void callFunction(std::function< void(std::string) > f)
-{
-    f("haha");
-}
-
-
-int main()
-{
-    FloatPayload p;
-    p.a = 24;
-
-    Message::send<FloatPayload>(NULL, 4, p, Message::ASYNC);
-
-    return 0;
-}
-*/
 
 #endif  // __MESSAGE_HPP__

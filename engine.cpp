@@ -111,8 +111,7 @@ void Engine::setMaxFrameSkip(unsigned int maxFrameSkip)
 void Engine::update(unsigned long gameTick)
 {
     auto payload = IntPayload(gameTick);
-    Message::send(NULL,
-                  UPDATE_MESSAGE,
+    Message::send(UPDATE_MESSAGE,
                   payload,
                   Message::ASYNC);
 }
@@ -120,8 +119,7 @@ void Engine::update(unsigned long gameTick)
 void Engine::render(float interpolation)
 {
     auto payload = FloatPayload(interpolation);
-    Message::send(NULL,
-                  RENDER_MESSAGE,
+    Message::send(RENDER_MESSAGE,
                   payload,
                   Message::ASYNC);
 }

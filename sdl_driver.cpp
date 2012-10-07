@@ -64,8 +64,7 @@ void SDLDriver::handleEvents()
     {
         SDLEventPayload payload;
         payload.event = event;
-        Message::send(NULL,
-                      Engine::UIEVENT_MESSAGE,
+        Message::send(Engine::UIEVENT_MESSAGE,
                       payload,
                       Message::ASYNC);
     }
