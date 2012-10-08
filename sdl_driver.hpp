@@ -26,6 +26,7 @@ public:
     void preRender();
     void postRender();
     void drawImage(GLuint texture, float x, float y, float w, float h, float r, float g, float b);
+    void drawLine(float sx, float sy, float ex, float ey, float r, float g, float b, float lineWidth);
 
     void handleEvents();
 

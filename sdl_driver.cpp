@@ -113,6 +113,8 @@ void SDLDriver::setVideoMode(unsigned int width,
 
     glDisable(GL_DEPTH_TEST);
     //glEnable(GL_TEXTURE_2D);
+
+    glEnable(GL_LINE_SMOOTH);
 }
 
 
@@ -136,6 +138,20 @@ SDLDriver::drawImage(GLuint texture, float x, float y, float w, float h, float r
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void SDLDriver::drawLine(float sx, float sy, float ex, float ey, float r, float g, float b, float lineWidth)
+{
+    glDisable(GL_TEXTURE_2D);
+
+    glLineWidth(lineWidth);
+
+    glColor3f(r, g, b);
+
+    glBegin(GL_LINES);
+    glVertex2f(sx, sy);
+    glVertex2f(ex, ey);
+    glEnd();
 }
 
 void
