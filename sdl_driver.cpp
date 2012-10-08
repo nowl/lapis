@@ -168,3 +168,15 @@ SDLDriver::postRender()
 {
     SDL_GL_SwapBuffers();
 }
+
+unsigned int
+SDLDriver::getScreenWidth() const
+{
+    return _screen->w;
+}
+
+unsigned int
+SDLDriver::getScreenHeight() const
+{
+    return _screen->h;
+}

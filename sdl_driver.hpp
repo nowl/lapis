@@ -30,6 +30,9 @@ public:
 
     void handleEvents();
 
+    unsigned int getScreenWidth() const;
+    unsigned int getScreenHeight() const;
+
 private:    
     SDLDriver();
 
