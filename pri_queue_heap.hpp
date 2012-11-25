@@ -36,6 +36,10 @@ public:
     void push(const T& value) {
         _queue.push(value);
     }
+
+    int size() const {
+        return _queue.size();
+    }
     
     void remove(const T& value) {
         Container &c = _queue.getUnderlyingContainer();

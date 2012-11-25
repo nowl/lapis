@@ -9,6 +9,8 @@
 
 #include "pri_queue_heap.hpp"
 
+static const int MAX_OPEN_LIST = 500;
+
 template<class MapType, class ElemType>
 class Node {
 public:
@@ -102,7 +104,7 @@ best_path(const MapType& map, const ElemType& start, const ElemType& end)
 
     // while the open list is not empty
 
-    while(!openList.empty()) {
+    while(!openList.empty() && openList.size() < MAX_OPEN_LIST) {
         
         // debug
         /*
